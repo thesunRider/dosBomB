@@ -1,33 +1,54 @@
+import sys
 import requests
 import nmap
 from scapy.all import *
+import asyncio,time
 
-def _nmapscan(target_ip,port_range):
+async def _nmapscan(target_ip,port_range=''):
+	nm = nmap.PortScanner()
+	print("calledscanner")
+	result = await loop.run_in_executor(None, nm.scan,target_ip, port_range)
+	return result
 
-def _makepacketrequest(target_ip,srcport,dstport,fla="S",tmt=2):
+async def _makepacketrequest(target_ip,srcport,dstport,fla="S",tmt=2):
 	p = IP(dst=target_ip)/TCP(sport=srcport,dport=dstport,flags=fla)
-	ans, unans = sr(p,timeout=tmt)
+	ans, unans = await loop.run_in_executor(None,sr,p,timeout=tmt)
 	try:
 		return ans[0][1].time - p.sent_time 
 	except Exception as e:
 		return False
 	
-
-
 #false is get request,true is post request
-def _makerequest(url,type,post_fields='',timeout=10):
+async def _makerequest(url,type,post_fields='',tim=10):
+	loop = asyncio.get_running_loop()
 	if type :
-		response = requests.post(url, data=post_fields, timeout=timeout)
+		
+		response = await loop.run_in_executor(None,requests.post,url, data=post_fields, timeout=tim)
 	else :
-		response = requests.get(url,timeout=timeout)
+		print("calledrequests")
+		response = await loop.run_in_executor(None,requests.get,url,timeout=tim)
 	print(response)
 	return response.elapsed.total_seconds()
 
 
-def main():
-	#print(_makerequest("https://www.facebook.com",False))
+async def main():
+	res1 = loop.create_task(_makerequest("https://www.facebook.com",False))
+	res2 = loop.create_task(_nmapscan('scanme.nmap.org'))
+	print("bro wait")
+	await asyncio.wait([res1,res2])
+	print(res1)
+	print(res2)
+	print('exit')
+	return 
+
 	#print(_makepacketrequest('127.0.0.1',101,102))
 
 
 if __name__ == '__main__':
-	main()
+	loop = asyncio.get_event_loop()
+	try:	
+		loop.run_until_complete(main())
+	except Exception as e:
+		pass
+	finally:
+		loop.close()

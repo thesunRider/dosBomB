@@ -84,12 +84,14 @@ class Toplevel1:
         self.Frame1.configure(highlightbackground="#d9d9d9")
         self.Frame1.configure(highlightcolor="black")
 
+        #------------XTRA--------------
         load = Image.open("../logo.png")
         load = load.resize((65, 55), Image.ANTIALIAS)
         render = ImageTk.PhotoImage(load)
-        img = tk.Label(self.Frame1, image=render)
-        img.image = render
-        img.place(relx=0.01, rely=0.1)
+        self.logoimg = tk.Label(self.Frame1, image=render)
+        self.logoimg.image = render
+        self.logoimg.place(relx=0.01, rely=0.1)
+        #------------XTRA--------------
 
         self.Label1 = tk.Label(self.Frame1)
         self.Label1.place(relx=0.466, rely=0.127, height=25, width=82)
