@@ -20,7 +20,7 @@ def _makerequest(url,type,post_fields='',timeout=10):
 		response = requests.post(url, data=post_fields, timeout=timeout)
 	else :
 		response = requests.get(url,timeout=timeout)
-	print(response)
+	#print(response)
 	return response.elapsed.total_seconds()
 
 
