@@ -1,13 +1,17 @@
-import sys
-import requests
-import nmap
+import sys,requests,nmap,asyncio,time,threading
 from scapy.all import *
-import asyncio,time
+
+loop = asyncio.get_event_loop()
 
 async def _nmapscan(target_ip,port_range=''):
+	print('started portscan')
 	nm = nmap.PortScanner()
-	print("calledscanner")
-	result = await loop.run_in_executor(None, nm.scan,target_ip, port_range)
+	if port_range == '' :
+		result = await loop.run_in_executor(None, nm.scan,target_ip)
+	else :
+		result = await loop.run_in_executor(None, nm.scan,target_ip,port_range)
+		
+	print('finished portscan')
 	return result
 
 async def _makepacketrequest(target_ip,srcport,dstport,fla="S",tmt=2):
@@ -20,35 +24,31 @@ async def _makepacketrequest(target_ip,srcport,dstport,fla="S",tmt=2):
 	
 #false is get request,true is post request
 async def _makerequest(url,type,post_fields='',tim=10):
+	print('started request')
 	loop = asyncio.get_running_loop()
 	if type :
 		
 		response = await loop.run_in_executor(None,requests.post,url, data=post_fields, timeout=tim)
 	else :
-		print("calledrequests")
-		response = await loop.run_in_executor(None,requests.get,url,timeout=tim)
-	print(response)
+		response = await loop.run_in_executor(None,requests.get,url)
+	print('finished request')
 	return response.elapsed.total_seconds()
 
 
 async def main():
-	res1 = loop.create_task(_makerequest("https://www.facebook.com",False))
-	res2 = loop.create_task(_nmapscan('scanme.nmap.org'))
-	print("bro wait")
-	await asyncio.wait([res1,res2])
-	print(res1)
-	print(res2)
-	print('exit')
-	return 
+	res1 = loop.create_task(_makerequest("https://www.google.com",False))
+	res2 = loop.create_task(_nmapscan('127.0.0.1'))
+	while 1:
+		fin,unfin = await asyncio.wait([res1,res2])
+		print(fin)
+		time.sleep(3)
 
-	#print(_makepacketrequest('127.0.0.1',101,102))
+	print(res1.result())
+	print(res2.result())
 
 
 if __name__ == '__main__':
-	loop = asyncio.get_event_loop()
 	try:	
 		loop.run_until_complete(main())
-	except Exception as e:
-		pass
-	finally:
+	except :
 		loop.close()
