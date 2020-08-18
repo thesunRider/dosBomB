@@ -1,5 +1,10 @@
-import sys,requests,nmap,asyncio,time,threading
+import requests,nmap,asyncio,time,threading,configparser
+
+from loader_main import *
 from scapy.all import *
+
+import sys
+sys.path.append('./gui/modules/general/')
 
 loop = asyncio.get_event_loop()
 
@@ -38,16 +43,26 @@ async def _makerequest(url,type,post_fields='',tim=10):
 async def main():
 	res1 = loop.create_task(_makerequest("https://www.google.com",False))
 	res2 = loop.create_task(_nmapscan('127.0.0.1'))
+
 	while 1:
-		fin,unfin = await asyncio.wait([res1,res2])
-		print(fin)
-		time.sleep(3)
+		if res1.done() and res2.done():
+			break
+
+		#handle over the cotrol flow to other loops
+		await asyncio.sleep(0)
+
 
 	print(res1.result())
 	print(res2.result())
 
 
 if __name__ == '__main__':
+
+	app = loader_plugin()
+	#x = app.getdetail_plugin()
+	#print(x)
+	k = app.loadall_plugin()
+	k[1].process()
 	try:	
 		loop.run_until_complete(main())
 	except :
