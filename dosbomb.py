@@ -2,11 +2,12 @@ import sys
 sys.path.append('./gui/modules/general/')
 sys.path.append('./gui/')
 
-import requests,nmap,asyncio,time,threading,configparser
-import gui_back,os
+import requests,nmap,asyncio,time,psutil
+import gui_main,os
 from loader_main import *
 from scapy.all import *
-
+import subprocess
+#setting proxy stuff
 proxy = 'http://127.0.0.1:8080'
 
 os.environ['http_proxy'] = proxy 
@@ -16,77 +17,62 @@ os.environ['HTTPS_PROXY'] = proxy
 
 loop = asyncio.get_event_loop()
 
-async def _nmapscan(target_ip,port_range=''):
-	print('started portscan')
-	nm = nmap.PortScanner()
-	if port_range == '' :
-		result = await loop.run_in_executor(None, nm.scan,target_ip)
-	else :
-		result = await loop.run_in_executor(None, nm.scan,target_ip,port_range)
-		
-	print('finished portscan')
-	return result
+async def readfromstd(cmd):
+	proc = subprocess.Popen([cmd],stdout=subprocess.PIPE)
+	while True:
+		line = proc.stdout.readline()
+		if not line:
+			break
+		  #the real code does filtering here
+		yield line.rstrip()
+		await asyncio.sleep(0)
 
-def _nmap_parseresults(results={}):
-	for x in list(results['nmap']['scaninfo'].keys()):
-		if x == 'error':
-			return False
-	ip_range = list(results['scan'].keys())
-	lst = []
-	for x in ip_range:
-		ports_inside = results['scan'][x]['tcp']
-		for y in ports_inside:
-			service_name = results['scan'][x]['tcp'][y]['name']
-			service_version = results['scan'][x]['tcp'][y]['version']
-			service_cpe = results['scan'][x]['tcp'][y]['cpe']
-			service_extrainfo = results['scan'][x]['tcp'][y]['extrainfo']
-			service_state = results['scan'][x]['tcp'][y]['state']
-			lst.append({'ip':x,'port':y,'name':service_name,'version':service_version,'cpe':service_cpe,'extrainfo':service_extrainfo,'state':service_state})
-	return lst
 
-async def _makepacketrequest(target_ip,srcport,dstport,fla="S",tmt=2):
-	p = IP(dst=target_ip)/TCP(sport=srcport,dport=dstport,flags=fla)
-	ans, unans = await loop.run_in_executor(None,sr,p,timeout=tmt)
-	try:
-		return ans[0][1].time - p.sent_time 
-	except Exception as e:
-		return False
+async def gui_tasks_update():
+	sent_dataold = 1000
+	recv_dataold = 1000
+	update_status = False
+	refresh_statusbar = 2
+	while 1:
+		try:
+			gui_main.gui_general['root'].update_idletasks()
+			gui_main.gui_general['root'].update()
+			if int(time.time())%refresh_statusbar == 0 and not update_status:
+				update_status = True
+				sent_data = int(round(psutil.net_io_counters().bytes_sent /1024,1))
+				recv_data = int(round(psutil.net_io_counters().bytes_recv /1024,1))
+				gui_main.gui_general['statusbar']['ntwrk_lbl_up'].set('UP: '+str((sent_data-sent_dataold)/refresh_statusbar)+'KB/s')
+				gui_main.gui_general['statusbar']['ntwrk_lbl_dwn'].set('DWN: '+str((recv_data-recv_dataold)/refresh_statusbar)+'KB/s')
+				sent_dataold = sent_data
+				recv_dataold = recv_data
+				if sent_dataold < 0 or recv_dataold < 0:
+					sent_dataold = 0
+					recv_dataold = 0
+
+			elif not int(time.time())%2 == 0 :
+				update_status = False
+
+		except Exception as e:
+			print(e)
+			return
 	
-#false is get request,true is post request
-async def _makerequest(url,type,post_fields='',tim=10):
-	print('started request')
-	loop = asyncio.get_running_loop()
-	if type :
-		
-		response = await loop.run_in_executor(None,requests.post,url, data=post_fields, timeout=tim)
-	else :
-		response = await loop.run_in_executor(None,requests.get,url)
-	print('finished request')
-	return response.elapsed.total_seconds()
+		#handle over the cotrol flow to other loops
+		await asyncio.sleep(0)
 
 
 async def main():
 	#res1 = loop.create_task(_makerequest("http://127.0.0.1:80/",False))
 	#res2 = loop.create_task(_nmapscan('127.0.0.1'))
+	waitfor = []
+
 	app = loader_plugin()
 	loaded_plugs = app.loadall_plugin()
 	for x in range(0,len(loaded_plugs)):
-		loaded_plugs[x].gui(gui_back.gui_general)
+		loaded_plugs[x].gui(gui_main.gui_general)
+	waitfor.append(loop.create_task(gui_tasks_update()))
 
-	while 1:
-		#if res2.done():
-		#	break
-		
-		try:
-			gui_back.gui_general['root'].update_idletasks()
-			gui_back.gui_general['root'].update()
-		except Exception as e:
-			print(e)
-			exit()
-		
-
-		#handle over the cotrol flow to other loops
-		await asyncio.sleep(0)
+	await (asyncio.wait(waitfor))
+	print("Quitting main")
 
 	#print(res2.result())
 	#print((res2.result()))
@@ -97,4 +83,3 @@ if __name__ == '__main__':
 
 	loop.run_until_complete(main())
 	loop.close()
-	time.sleep(5)

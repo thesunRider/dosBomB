@@ -145,12 +145,45 @@ class Toplevel1:
         self.menubar = tk.Menu(top,font="TkMenuFont",bg=_bgcolor,fg=_fgcolor)
         top.configure(menu = self.menubar)
 
-        self.menubar.add_command(
-                label="File")
+        self.sub_menu = tk.Menu(top,
+            activebackground="#ececec",
+            activeborderwidth=1,
+            activeforeground="#000000",
+            background="#d9d9d9",
+            borderwidth=1,
+            disabledforeground="#a3a3a3",
+            foreground="#000000",
+            tearoff=0)
+        self.menubar.add_cascade(menu=self.sub_menu,
+            label="File")
+        self.sub_menu.add_command(
+            label="Scan")
+        self.sub_menu.add_command(
+            label="Proxy")
+        self.sub_menu.add_command(
+            label="Analyze")
         self.menubar.add_command(
                 label="Settings")
-        self.menubar.add_command(
-                label="About")
+        self.sub_menu3 = tk.Menu(top,
+            activebackground="#ececec",
+            activeborderwidth=1,
+            activeforeground="#000000",
+            background="#d9d9d9",
+            borderwidth=1,
+            disabledforeground="#a3a3a3",
+            foreground="#000000",
+            tearoff=0)
+        self.menubar.add_cascade(menu=self.sub_menu3,
+            label="About")
+        self.sub_menu3.add_command(
+            label="About")
+        self.sub_menu3.add_command(
+            label="Update")
+        self.sub_menu3.add_command(
+            label="Help")
+        self.sub_menu3.add_command(
+            label="Buy me a coffee ;-)")
+        
 
         global _images
         _images = (
@@ -220,23 +253,61 @@ class Toplevel1:
         self.PNotebook1.bind('<ButtonRelease-1>',_button_release)
         self.PNotebook1.bind('<Motion>',_mouse_over)
 
-        
-        gui_general['notbkhandl'] =  self.PNotebook1
-        gui_general['menubar'] = self.menubar
 
         self.TFrame1 = ttk.Frame(top)
-        self.TFrame1.place(relx=0.0, rely=0.94, relheight=0.063, relwidth=0.588)
+        self.TFrame1.place(relx=0.0, rely=0.94, relheight=0.063, relwidth=0.522)
         self.TFrame1.configure(relief='groove')
         self.TFrame1.configure(borderwidth="2")
         self.TFrame1.configure(relief="groove")
         self.TFrame1.configure(cursor="fleur")
 
+        self.tsk_lbl = tk.StringVar()
+        self.tsk_lbl.set('Tasks Running: 3  Flooder/synFlooder')
+
+        self.ntup = tk.StringVar()
+        self.ntup.set('''UP: 20KB''')
+
+        self.ntdwn = tk.StringVar()
+        self.ntdwn.set('''DWN: 500KB''')
+
+        self.TLabel1 = ttk.Label(self.TFrame1,textvariable=self.tsk_lbl)
+        self.TLabel1.place(relx=0.0, rely=0.0, height=27, width=271)
+        self.TLabel1.configure(background="#d9d9d9")
+        self.TLabel1.configure(foreground="#000000")
+        self.TLabel1.configure(font="TkDefaultFont")
+        self.TLabel1.configure(relief="flat")
+        self.TLabel1.configure(anchor='w')
+        self.TLabel1.configure(justify='left')
+        self.TLabel1.configure(cursor="fleur")
+
         self.TFrame1_1 = ttk.Frame(top)
-        self.TFrame1_1.place(relx=0.579, rely=0.94, relheight=0.063
-                , relwidth=0.422)
+        self.TFrame1_1.place(relx=0.513, rely=0.94, relheight=0.063
+                , relwidth=0.488)
         self.TFrame1_1.configure(relief='groove')
         self.TFrame1_1.configure(borderwidth="2")
         self.TFrame1_1.configure(relief="groove")
+
+        self.TLabel2 = ttk.Label(self.TFrame1_1,textvariable=self.ntup)
+        self.TLabel2.place(relx=0.237, rely=0.0, height=24, width=95)
+        self.TLabel2.configure(background="#d9d9d9")
+        self.TLabel2.configure(foreground="#000000")
+        self.TLabel2.configure(font="TkDefaultFont")
+        self.TLabel2.configure(relief="flat")
+        self.TLabel2.configure(anchor='w')
+        self.TLabel2.configure(justify='left')
+
+        self.TLabel3 = ttk.Label(self.TFrame1_1,textvariable=self.ntdwn)
+        self.TLabel3.place(relx=0.576, rely=0.0, height=24, width=115)
+        self.TLabel3.configure(background="#d9d9d9")
+        self.TLabel3.configure(foreground="#000000")
+        self.TLabel3.configure(font="TkDefaultFont")
+        self.TLabel3.configure(relief="flat")
+        self.TLabel3.configure(anchor='w')
+        self.TLabel3.configure(justify='left')
+
+        gui_general['statusbar'] = {'task_lbl':self.tsk_lbl,'ntwrk_lbl_up':self.ntup ,'ntwrk_lbl_dwn':self.ntdwn}
+        gui_general['notbkhandl'] =  self.PNotebook1
+        gui_general['menubar'] = self.menubar
 
 # The following code is add to handle mouse events with the close icons
 # in PNotebooks widgets.
@@ -279,7 +350,6 @@ def _mouse_over(event):
         widget.state(['!alternate'])
 
 vp_start_gui()
-print("njan poa")
 #.mainloop()
 
 
