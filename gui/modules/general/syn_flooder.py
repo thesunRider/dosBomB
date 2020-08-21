@@ -10,4 +10,5 @@ class plugin_dosbomb:
 
 	def gui(self,guihandl):
 		print("tamper with gui here")
+		print(guihandl)
 

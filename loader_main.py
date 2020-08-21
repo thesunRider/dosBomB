@@ -12,6 +12,9 @@ class simplePlugin:
 	def process(self):
 		print("Internal Hello")
 
+	def gui(self,guihandl):
+		print("gui stuff done here")
+
 
 
 

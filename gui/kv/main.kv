@@ -1,0 +1,15 @@
+# main.kv
+#: include playground.kv
+
+<NavigationLayout>:
+    ScreenManager:
+        id: scr_mngr
+            Screen:
+                 name: 'page1'
+                 Label:
+                    text: "page1"
+            Screen:
+                name: 'page2'
+                Label:
+                    text: "Page 2"
+                PlayGround:
