@@ -224,8 +224,19 @@ class Toplevel1:
         gui_general['notbkhandl'] =  self.PNotebook1
         gui_general['menubar'] = self.menubar
 
-        self.TSeparator1 = ttk.Separator(top)
-        self.TSeparator1.place(relx=-0.017, rely=0.941, relwidth=1.025)
+        self.TFrame1 = ttk.Frame(top)
+        self.TFrame1.place(relx=0.0, rely=0.94, relheight=0.063, relwidth=0.588)
+        self.TFrame1.configure(relief='groove')
+        self.TFrame1.configure(borderwidth="2")
+        self.TFrame1.configure(relief="groove")
+        self.TFrame1.configure(cursor="fleur")
+
+        self.TFrame1_1 = ttk.Frame(top)
+        self.TFrame1_1.place(relx=0.579, rely=0.94, relheight=0.063
+                , relwidth=0.422)
+        self.TFrame1_1.configure(relief='groove')
+        self.TFrame1_1.configure(borderwidth="2")
+        self.TFrame1_1.configure(relief="groove")
 
 # The following code is add to handle mouse events with the close icons
 # in PNotebooks widgets.

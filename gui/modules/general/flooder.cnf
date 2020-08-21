@@ -1,8 +1,8 @@
 [plugin]
-plugin_name=Syn Flooder
+plugin_name=Flooder
 plugin_version=1.00
 plugin_author=Suryasaradhi
 plugin_date=18/08/2020
-plugin_file=syn_flooder.py
-plugin_class=plugin_synflooder
+plugin_file=flooder.py
+plugin_class=plugin_flooder
 plugin_internal=True 
