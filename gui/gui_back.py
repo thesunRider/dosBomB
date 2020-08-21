@@ -5,12 +5,16 @@
 #  in conjunction with Tcl version 8.6
 #    Aug 16, 2020 02:30:04 PM IST  platform: Windows NT
 
-import sys
+import sys,time
+global gui_general
+gui_general = {}
 
 try:
     import Tkinter as tk
 except ImportError:
     import tkinter as tk
+
+from tkinter import messagebox 
 
 try:
     import ttk
@@ -26,9 +30,21 @@ def vp_start_gui():
     '''Starting point when module is the main routine.'''
     global val, w, root
     root = tk.Tk()
+    gui_general['root'] = root
+
     top = Toplevel1 (root)
     gui_support.init(root, top)
-    root.mainloop()
+
+    PNotebook1_t1 = tk.Frame(gui_general['notbkhandl'])
+    gui_general['notbkhandl'].add(PNotebook1_t1, padding=3)
+    gui_general['notbkhandl'].tab(1, text="Scan",compound="none",underline="-1",)
+    PNotebook1_t1.configure(background="#d9d9d9")
+    PNotebook1_t1.configure(highlightbackground="#d9d9d9")
+    PNotebook1_t1.configure(highlightcolor="black")
+
+
+
+
 
 w = None
 def create_Toplevel1(rt, *args, **kwargs):
@@ -85,7 +101,7 @@ class Toplevel1:
         self.Frame1.configure(highlightcolor="black")
 
         #------------XTRA--------------
-        load = Image.open("../logo.png")
+        load = Image.open("./logo.png")
         load = load.resize((65, 55), Image.ANTIALIAS)
         render = ImageTk.PhotoImage(load)
         self.logoimg = tk.Label(self.Frame1, image=render)
@@ -200,15 +216,13 @@ class Toplevel1:
         self.PNotebook1_t2.configure(cursor="fleur")
         self.PNotebook1_t2.configure(highlightbackground="#d9d9d9")
         self.PNotebook1_t2.configure(highlightcolor="black")
-        self.PNotebook1_t1 = tk.Frame(self.PNotebook1)
-        self.PNotebook1.add(self.PNotebook1_t1, padding=3)
-        self.PNotebook1.tab(1, text="Scan",compound="none",underline="-1",)
-        self.PNotebook1_t1.configure(background="#d9d9d9")
-        self.PNotebook1_t1.configure(highlightbackground="#d9d9d9")
-        self.PNotebook1_t1.configure(highlightcolor="black")
         self.PNotebook1.bind('<Button-1>',_button_press)
         self.PNotebook1.bind('<ButtonRelease-1>',_button_release)
         self.PNotebook1.bind('<Motion>',_mouse_over)
+
+        
+        gui_general['notbkhandl'] =  self.PNotebook1
+        gui_general['menubar'] = self.menubar
 
         self.TSeparator1 = ttk.Separator(top)
         self.TSeparator1.place(relx=-0.017, rely=0.941, relwidth=1.025)
@@ -233,8 +247,14 @@ def _button_release(event):
     except TclError:
         pass
     if "close" in element and widget._active == index:
-        widget.forget(index)
-        widget.event_generate("<<NotebookTabClosed>>")
+        #widget.forget(index)
+        name_current = gui_general['notbkhandl'].tab(gui_general['notbkhandl'].index("current"), "text")
+        notclose = ['General']
+        if not name_current in notclose:
+            gui_general['notbkhandl'].tab(index, state="hidden")
+            widget.event_generate("<<NotebookTabClosed>>")
+        else :
+            messagebox.showerror("Cannot Close", "This "+name_current+" tab cannot be closed ;-)") 
 
     widget.state(['!pressed'])
     widget._active = None
@@ -247,9 +267,9 @@ def _mouse_over(event):
     else:
         widget.state(['!alternate'])
 
-if __name__ == '__main__':
-    vp_start_gui()
-
+vp_start_gui()
+print("njan poa")
+#.mainloop()
 
 
 

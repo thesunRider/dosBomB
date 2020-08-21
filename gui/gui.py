@@ -245,8 +245,7 @@ def _mouse_over(event):
     else:
         widget.state(['!alternate'])
 
-if __name__ == '__main__':
-    vp_start_gui()
+vp_start_gui()
 
 
 
