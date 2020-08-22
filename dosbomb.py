@@ -61,8 +61,7 @@ async def main():
 	loaded_plugs = app.loadall_plugin()
 	for x in range(0,len(loaded_plugs)):
 		loaded_plugs[x].gui(gui_main.gui_general)
-		#print(x,"-",gui_main.gui_general)
-		#print(loaded_plugs[x])
+		
 	waitfor.append(loop.create_task(gui_tasks_update()))
 
 	await (asyncio.wait(waitfor))
