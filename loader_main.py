@@ -2,7 +2,7 @@ import sys,glob,configparser,importlib,os
 sys.path.append('./gui/modules/general/')
 
 
-class simplePlugin:
+class plugin_dosbomb:
 	plugin_name = "Simple Plugin inside"
 	plugin_version = "1.00"
 	plugin_author = "Suryasaradhi"
@@ -10,17 +10,17 @@ class simplePlugin:
 	plugin_linked_cnf = False
 
 	def process(self):
-		print("Internal Hello")
+		print("Internal process call")
 
 	def gui(self,guihandl):
-		print("gui stuff done here")
+		print("Internal gui plugins call")
 
 
 
 
 class loader_plugin:
 	def __init__(self, plugins = []):
-		self.internal_modules = [simplePlugin()]
+		self.internal_modules = [plugin_dosbomb()]
 		self._plugins = plugins
 
 	def run(self):
@@ -61,13 +61,14 @@ class loader_plugin:
 			return_ary.append(details_dict)
 		return return_ary 
 
-	def loadall_plugin(self):
-		lst_plugs = self.getdetail_plugin()
+	def loadall_plugin(self,loc='./gui/modules/'):
+		lst_plugs = self.getdetail_plugin(loc)
 		for x in lst_plugs:
 			plugin_filename = x['plugin_file']
 			plugin_class = x['plugin_class']
 			path, file = os.path.split(x['plugin_dir'])
 			spec = importlib.util.spec_from_file_location("Plugin."+plugin_class, path + "/" + plugin_filename)
+			#print(spec)
 			module = importlib.util.module_from_spec(spec)
 			sys.modules[spec.name] = module
 			spec.loader.exec_module(module)		

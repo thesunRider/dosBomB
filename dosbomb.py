@@ -10,22 +10,14 @@ import subprocess
 #setting proxy stuff
 proxy = 'http://127.0.0.1:8080'
 
+running_tasks = []
+
 os.environ['http_proxy'] = proxy 
 os.environ['HTTP_PROXY'] = proxy
 os.environ['https_proxy'] = proxy
 os.environ['HTTPS_PROXY'] = proxy
 
 loop = asyncio.get_event_loop()
-
-async def readfromstd(cmd):
-	proc = subprocess.Popen([cmd],stdout=subprocess.PIPE)
-	while True:
-		line = proc.stdout.readline()
-		if not line:
-			break
-		  #the real code does filtering here
-		yield line.rstrip()
-		await asyncio.sleep(0)
 
 
 async def gui_tasks_update():
@@ -69,6 +61,8 @@ async def main():
 	loaded_plugs = app.loadall_plugin()
 	for x in range(0,len(loaded_plugs)):
 		loaded_plugs[x].gui(gui_main.gui_general)
+		#print(x,"-",gui_main.gui_general)
+		#print(loaded_plugs[x])
 	waitfor.append(loop.create_task(gui_tasks_update()))
 
 	await (asyncio.wait(waitfor))

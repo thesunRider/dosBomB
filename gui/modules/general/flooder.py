@@ -12,79 +12,46 @@ except ImportError:
     import tkinter.ttk as ttk
     py3 = True
 
+import sys,glob,configparser,importlib,os
+sys.path.append('../../../')
+import loader_main 
+
 class plugin_dosbomb:
 	plugin_name = "Flooder"
 	plugin_version = "1.00"
 	plugin_author = "Suryasaradhi"
 	plugin_date = "18/08/2020" #DD/MM/YYYY
 	plugin_linked_cnf = True
+	flooder_loc = './flooders/'
 
 	def process(self):
-		print("loaded_syn_flooder")
+		print("loaded_flooder")
 
 	def gui(self,guihandl):
 		print("tamper with gui here")
-		print(guihandl)
+		#print(guihandl)
 		PNOTEBOOK = ""
-		
+		hndlsvd = guihandl['notbkhandl']
 		self.PNotebook1_t3 = tk.Frame(guihandl['notbkhandl'])
 		guihandl['notbkhandl'].add(self.PNotebook1_t3, padding=3)
 		guihandl['notbkhandl'].tab(2, text="Flooder",compound="none",underline="-1",)
 		self.PNotebook1_t3.configure(background="#d9d9d9")
 		self.PNotebook1_t3.configure(highlightbackground="#d9d9d9")
 		self.PNotebook1_t3.configure(highlightcolor="black")
+		self.PNotebook2_12 = ttk.Notebook(self.PNotebook1_t3)
+		self.PNotebook2_12.place(relx=0.018, rely=0.04, relheight=0.921, relwidth=0.964)
+		self.PNotebook2_12.configure(style=PNOTEBOOK)
 
-		self.PNotebook2 = ttk.Notebook(self.PNotebook1_t3)
-		self.PNotebook2.place(relx=0.018, rely=0.041, relheight=0.918
-			, relwidth=0.964)
-		self.PNotebook2.configure(takefocus="")
-		self.PNotebook2.configure(style=PNOTEBOOK)
-		self.PNotebook2_t1 = tk.Frame(self.PNotebook2)
-		self.PNotebook2.add(self.PNotebook2_t1, padding=3)
-		self.PNotebook2.tab(0, text="Syn Flood", compound="none", underline="-1"
-			,)
-		self.PNotebook2_t1.configure(background="#d9d9d9")
-		self.PNotebook2_t1.configure(highlightbackground="#d9d9d9")
-		self.PNotebook2_t1.configure(highlightcolor="black")
-		self.PNotebook2_t3 = tk.Frame(self.PNotebook2)
-		self.PNotebook2.add(self.PNotebook2_t3, padding=3)
-		self.PNotebook2.tab(1, text="ICMP Flood", compound="none", underline="-1"
-			,)
-		self.PNotebook2_t3.configure(background="#d9d9d9")
-		self.PNotebook2_t3.configure(highlightbackground="#d9d9d9")
-		self.PNotebook2_t3.configure(highlightcolor="black")
-		self.PNotebook2_t2 = tk.Frame(self.PNotebook2)
-		self.PNotebook2.add(self.PNotebook2_t2, padding=3)
-		self.PNotebook2.tab(2, text="HTTP Flood", compound="none", underline="-1"
-			,)
-		self.PNotebook2_t2.configure(relief="groove")
-		self.PNotebook2_t2.configure(background="#d9d9d9")
-		self.PNotebook2_t2.configure(highlightbackground="#d9d9d9")
-		self.PNotebook2_t2.configure(highlightcolor="black")
-		self.PNotebook2_t4 = tk.Frame(self.PNotebook2)
-		self.PNotebook2.add(self.PNotebook2_t4, padding=3)
-		self.PNotebook2.tab(3, text="UDP Flood", compound="none", underline="-1"
-			,)
-		self.PNotebook2_t4.configure(background="#d9d9d9")
-		self.PNotebook2_t4.configure(highlightbackground="#d9d9d9")
-		self.PNotebook2_t4.configure(highlightcolor="black")
-		self.PNotebook2_t5 = tk.Frame(self.PNotebook2)
-		self.PNotebook2.add(self.PNotebook2_t5, padding=3)
-		self.PNotebook2.tab(4, text="IPSec Flood", compound="none", underline="-1"
-			,)
-		self.PNotebook2_t5.configure(background="#d9d9d9")
-		self.PNotebook2_t5.configure(highlightbackground="#d9d9d9")
-		self.PNotebook2_t5.configure(highlightcolor="black")
-		self.PNotebook2_t6 = tk.Frame(self.PNotebook2)
-		self.PNotebook2.add(self.PNotebook2_t6, padding=3)
-		self.PNotebook2.tab(5, text="IKE Flood", compound="none", underline="-1"
-			,)
-		self.PNotebook2_t6.configure(relief="sunken")
-		self.PNotebook2_t6.configure(background="#d9d9d9")
-		self.PNotebook2_t6.configure(highlightbackground="#d9d9d9")
-		self.PNotebook2_t6.configure(highlightcolor="black")
-		self.PNotebook2.bind('<Button-1>',self._button_press)
-		self.PNotebook2.bind('<Motion>',self._mouse_over)
+		self.plugs_s = loader_main.loader_plugin()
+		self.guihandl2 = guihandl
+		self.guihandl2['notbkhandl'] = self.PNotebook2_12
+		self.plg_s = self.plugs_s.loadall_plugin('./gui/modules/general/flooders')
+		for x in range(0,len(self.plg_s)):
+			self.plg_s[x].gui(self.guihandl2)
+
+		guihandl['notbkhandl'] = hndlsvd
+
+
 
 	def _button_press(self,event):
 	    widget = event.widget

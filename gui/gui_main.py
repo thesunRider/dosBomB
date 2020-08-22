@@ -162,8 +162,24 @@ class Toplevel1:
             label="Proxy")
         self.sub_menu.add_command(
             label="Analyze")
-        self.menubar.add_command(
-                label="Settings")
+
+        self.sub_menu2 = tk.Menu(top,
+            activebackground="#ececec",
+            activeborderwidth=1,
+            activeforeground="#000000",
+            background="#d9d9d9",
+            borderwidth=1,
+            disabledforeground="#a3a3a3",
+            foreground="#000000",
+            tearoff=0)
+        self.menubar.add_cascade(menu=self.sub_menu2,
+            label="Settings")
+        self.sub_menu2.add_command(
+            label="Preferences")
+        self.sub_menu2.add_command(
+            label="Terminate Running Tasks")
+        
+
         self.sub_menu3 = tk.Menu(top,
             activebackground="#ececec",
             activeborderwidth=1,
