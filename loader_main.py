@@ -1,5 +1,5 @@
 import sys,glob,configparser,importlib,os
-sys.path.append('./gui/modules/general/')
+sys.path.append('./modules/general/')
 
 
 class plugin_dosbomb:
@@ -48,8 +48,9 @@ class loader_plugin:
 	def list_plugin(self):
 		return self.internal_modules + self._plugins
 
-	def getdetail_plugin(self,loc='./gui/modules/'):
+	def getdetail_plugin(self,loc='./modules/'):
 		files = [os.path.join(dp, f) for dp, dn, filenames in os.walk(loc) for f in filenames if os.path.splitext(f)[1] == '.cnf']
+		print(files)
 		config = configparser.RawConfigParser()
 		return_ary = []
 		for x in files:
@@ -61,7 +62,7 @@ class loader_plugin:
 			return_ary.append(details_dict)
 		return return_ary 
 
-	def loadall_plugin(self,loc='./gui/modules/'):
+	def loadall_plugin(self,loc='./modules/'):
 		lst_plugs = self.getdetail_plugin(loc)
 		for x in lst_plugs:
 			plugin_filename = x['plugin_file']

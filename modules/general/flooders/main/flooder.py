@@ -13,7 +13,7 @@ except ImportError:
     py3 = True
 
 import sys,glob,configparser,importlib,os
-sys.path.append('../../../')
+sys.path.append('../../../../')
 import loader_main 
 
 class plugin_dosbomb:
@@ -22,7 +22,7 @@ class plugin_dosbomb:
 	plugin_author = "Suryasaradhi"
 	plugin_date = "18/08/2020" #DD/MM/YYYY
 	plugin_linked_cnf = True
-	flooder_loc = './flooders/'
+	flooder_loc = './modules/general/flooders/plugin_flooders/'
 
 	def process(self):
 		print("loaded_flooder")
@@ -45,9 +45,11 @@ class plugin_dosbomb:
 		self.plugs_s = loader_main.loader_plugin()
 		self.guihandl2 = guihandl
 		self.guihandl2['notbkhandl'] = self.PNotebook2_12
-		self.plg_s = self.plugs_s.loadall_plugin('./gui/modules/general/flooders')
+		self.plg_s = self.plugs_s.loadall_plugin('./modules/general/flooders/plugin_flooders/')
+		
 		for x in range(0,len(self.plg_s)):
 			self.plg_s[x].gui(self.guihandl2)
+			print(self.plg_s[x].plugin_name,"kolam")
 
 		guihandl['notbkhandl'] = hndlsvd
 

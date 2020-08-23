@@ -270,6 +270,44 @@ class Toplevel1:
         self.PNotebook1.bind('<Motion>',_mouse_over)
 
 
+        self.treeview=ttk.Treeview(self.PNotebook1)
+        self.treeview.heading("#0",text="Loaded Plugins",anchor=tk.W)
+        self.treeview.place(relx=0.036, rely=0.22)
+        self.treeview.insert('','0','item1',text='Parent tree')  
+        self.treeview.insert('','1','item2',text='1st Child')  
+        self.treeview.insert('','end','item3',text='2nd Child')  
+        self.treeview.insert('item2','end','A',text='A')  
+        self.treeview.insert('item2','end','B',text='B')  
+        self.treeview.insert('item2','end','C',text='C')  
+        self.treeview.insert('item3','end','D',text='D')  
+        self.treeview.insert('item3','end','E',text='E')  
+        self.treeview.insert('item3','end','F',text='F')  
+        #self.treeview.move('item2','item1','end')  
+        #self.treeview.move('item3','item1','end')  
+
+        self.TLabel4 = ttk.Label(self.PNotebook1)
+        self.TLabel4.place(relx=0.482, rely=0.13, height=24, width=85)
+        self.TLabel4.configure(background="#d9d9d9")
+        self.TLabel4.configure(foreground="#000000")
+        self.TLabel4.configure(font="TkDefaultFont")
+        self.TLabel4.configure(relief="flat")
+        self.TLabel4.configure(anchor='w')
+        self.TLabel4.configure(justify='left')
+        self.TLabel4.configure(text='''Description''')
+
+        self.Text2 = tk.Text(self.PNotebook1)
+        self.Text2.place(relx=0.5, rely=0.22, relheight=0.722, relwidth=0.471)
+        self.Text2.configure(background="white")
+        self.Text2.configure(font="TkTextFont")
+        self.Text2.configure(foreground="black")
+        self.Text2.configure(highlightbackground="#d9d9d9")
+        self.Text2.configure(highlightcolor="black")
+        self.Text2.configure(insertbackground="black")
+        self.Text2.configure(selectbackground="blue")
+        self.Text2.configure(selectforeground="white")
+        self.Text2.configure(wrap="word")
+
+
         self.TFrame1 = ttk.Frame(top)
         self.TFrame1.place(relx=0.0, rely=0.94, relheight=0.063, relwidth=0.522)
         self.TFrame1.configure(relief='groove')
@@ -278,7 +316,7 @@ class Toplevel1:
         self.TFrame1.configure(cursor="fleur")
 
         self.tsk_lbl = tk.StringVar()
-        self.tsk_lbl.set('Tasks Running: 3  Flooder/synFlooder')
+        self.tsk_lbl.set('Tasks Running: 0  None Running...')
 
         self.ntup = tk.StringVar()
         self.ntup.set('''UP: 20KB''')
@@ -324,6 +362,7 @@ class Toplevel1:
         gui_general['statusbar'] = {'task_lbl':self.tsk_lbl,'ntwrk_lbl_up':self.ntup ,'ntwrk_lbl_dwn':self.ntdwn}
         gui_general['notbkhandl'] =  self.PNotebook1
         gui_general['menubar'] = self.menubar
+        gui_general['treeview'] = self.treeview
 
 # The following code is add to handle mouse events with the close icons
 # in PNotebooks widgets.
