@@ -4,6 +4,16 @@ from scapy.all import *
 
 loop = asyncio.get_event_loop()
 
+
+async def readfromstd(cmd):
+	proc = subprocess.Popen([cmd],stdout=subprocess.PIPE)
+	while True:
+		line = proc.stdout.readline()
+		if not line:
+			break
+		  #the real code does filtering here
+		yield line.rstrip()
+
 async def _nmapscan(target_ip,port_range=''):
 	print('started portscan')
 	nm = nmap.PortScanner()
