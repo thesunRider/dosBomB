@@ -3,11 +3,10 @@ sys.path.append('./modules/general/')
 
 
 class plugin_dosbomb:
-	plugin_name = "Simple Plugin inside"
-	plugin_version = "1.00"
-	plugin_author = "Suryasaradhi"
-	plugin_date = "18/08/2020" #DD/MM/YYYY
-	plugin_linked_cnf = False
+	plugin_data = {"plugin_name" : "Simple Plugin inside","plugin_version" :"1.00",
+					"plugin_author" : "Suryasaradhi","plugin_date" : "18/08/2020" ,
+					"plugin_linked_cnf" : False,"plugin_tree" : ''}
+	run = False
 
 	def process(self):
 		print("Internal process call")
