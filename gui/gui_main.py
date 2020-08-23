@@ -273,15 +273,6 @@ class Toplevel1:
         self.treeview=ttk.Treeview(self.PNotebook1)
         self.treeview.heading("#0",text="Loaded Plugins",anchor=tk.W)
         self.treeview.place(relx=0.036, rely=0.22)
-        self.treeview.insert('','0','item1',text='Parent tree')  
-        self.treeview.insert('','1','item2',text='1st Child')  
-        self.treeview.insert('','end','item3',text='2nd Child')  
-        self.treeview.insert('item2','end','A',text='A')  
-        self.treeview.insert('item2','end','B',text='B')  
-        self.treeview.insert('item2','end','C',text='C')  
-        self.treeview.insert('item3','end','D',text='D')  
-        self.treeview.insert('item3','end','E',text='E')  
-        self.treeview.insert('item3','end','F',text='F')  
         #self.treeview.move('item2','item1','end')  
         #self.treeview.move('item3','item1','end')  
 
@@ -306,6 +297,7 @@ class Toplevel1:
         self.Text2.configure(selectbackground="blue")
         self.Text2.configure(selectforeground="white")
         self.Text2.configure(wrap="word")
+        self.Text2.configure(state="disabled")
 
 
         self.TFrame1 = ttk.Frame(top)
@@ -384,11 +376,11 @@ def _button_release(event):
     except TclError:
         pass
     if "close" in element and widget._active == index:
-        #widget.forget(index)
         name_current = gui_general['notbkhandl'].tab(gui_general['notbkhandl'].index("current"), "text")
         notclose = ['General']
         if not name_current in notclose:
-            gui_general['notbkhandl'].tab(index, state="hidden")
+            #gui_general['notbkhandl'].tab(index, state="hidden")
+            widget.forget(index)
             widget.event_generate("<<NotebookTabClosed>>")
         else :
             messagebox.showerror("Cannot Close", "This "+name_current+" tab cannot be closed ;-)") 

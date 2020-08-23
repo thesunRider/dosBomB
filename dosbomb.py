@@ -27,6 +27,8 @@ async def gui_tasks_update():
 	update_status = False
 	refresh_statusbar = 2
 	k_inc = 0
+	gui_main.gui_general['root'].update_idletasks()
+	gui_main.gui_general['root'].update()
 	while 1:
 		try:
 			gui_main.gui_general['root'].update_idletasks()
@@ -36,11 +38,14 @@ async def gui_tasks_update():
 				sent_data = int(round(psutil.net_io_counters().bytes_sent /1024,1))
 				recv_data = int(round(psutil.net_io_counters().bytes_recv /1024,1))
 				if len(running_tasks) > 0 :
-					gui_main.gui_general['statusbar']['task_lbl'].set('Tasks Running: ' + str(len(running_tasks)+1) +'  ' + running_tasks[k_inc])
+					vark = 'Tasks Running: ' + str(len(running_tasks)) +'  ' + running_tasks[k_inc].plugin_data['plugin_name']
 					k_inc += 1
 					if k_inc > len(running_tasks)-1 :
 						k_inc = 0
+				else :
+					vark = 'Tasks Running: 0 None Running...'
 
+				gui_main.gui_general['statusbar']['task_lbl'].set(vark)
 				gui_main.gui_general['statusbar']['ntwrk_lbl_up'].set('UP: '+str((sent_data-sent_dataold)/refresh_statusbar)+'KB/s')
 				gui_main.gui_general['statusbar']['ntwrk_lbl_dwn'].set('DWN: '+str((recv_data-recv_dataold)/refresh_statusbar)+'KB/s')
 				sent_dataold = sent_data
@@ -60,18 +65,20 @@ async def gui_tasks_update():
 		#handle over the cotrol flow to other loops
 		await asyncio.sleep(0)
 
-
 async def main():
 	#res1 = loop.create_task(_makerequest("http://127.0.0.1:80/",False))
 	#res2 = loop.create_task(_nmapscan('127.0.0.1'))
 	waitfor = []
+	global loaded_plugs
 
 	app = loader_plugin()
 	loaded_plugs = app.loadall_plugin()
 	for x in range(0,len(loaded_plugs)):
 		loaded_plugs[x].gui(gui_main.gui_general)
 
+	refreshtreeview(loaded_plugs)
 	waitfor.append(loop.create_task(gui_tasks_update()))
+	waitfor.append(loop.create_task(pollrunning_processes()))
 
 	await (asyncio.wait(waitfor))
 	print("Quitting main")
@@ -79,15 +86,52 @@ async def main():
 	#print(res2.result())
 	#print((res2.result()))
 
-def refreshtreeview():
-	#gui_main.gui_general['treeview']
-	files = [os.path.join(dp, f) for dp, dn, filenames in os.walk('./') for f in filenames if os.path.splitext(f)[1] == '.cnf']
-	for x in files:
-		for y in files:
-			if not x == y :
-				if in_directory(y, os.path.dirname(x)):
-					print(x + 'is the parent of' + y)
+async def pollrunning_processes():
+	global running_tasks
+	print('called')
+	while True:
+		#print(running_tasks)
+		for x in range(0,len(loaded_plugs)):
+			if loaded_plugs[x].run and not loaded_plugs[x] in running_tasks :
+				loaded_plugs[x].process()
+				running_tasks.append(loaded_plugs[x])
+			elif not loaded_plugs[x].run and loaded_plugs[x] in running_tasks:
+				if len(running_tasks) > 0 :
+					running_tasks.remove(loaded_plugs[x])
+					print(running_tasks)
+		await asyncio.sleep(0)
+
+
+def refreshtreeview(plugs):
+	for x in range(0,len(plugs)):
+		tre_id = plugs[x].plugin_data['plugin_tree']
+		if not tre_id == '' :
+			tre_split = tre_id.split("/")
+			for y in range(0,len(tre_split)):
+				if gui_main.gui_general['treeview'].exists(tre_split[y] + str(y)):
+					#print(tre_split,"skip iter")
+					continue
+
+				if len(tre_split) == 1 :
+					gui_main.gui_general['treeview'].insert('','end',tre_id,text=tre_id)  
 					break
+				if y == 0:
+					gui_main.gui_general['treeview'].insert('','end',tre_split[y] + str(y),text=tre_split[y]) 			
+				elif y == len(tre_split)-1:
+					gui_main.gui_general['treeview'].insert(tre_split[y-1] + str(y-1),'end',tre_id,text=tre_split[y])
+				else :
+					gui_main.gui_general['treeview'].insert(tre_split[y-1] + str(y-1),'end',tre_split[y] + str(y),text=tre_split[y])
+
+	gui_main.gui_general['treeview'].bind('<<TreeviewSelect>>', trviiew_slct)
+
+def trviiew_slct(event):
+	slctd = event.widget.selection()[0]
+	tab_names = [gui_main.gui_general['notbkhandl'].tab(i, option="text") for i in gui_main.gui_general['notbkhandl'].tabs()]
+	#print(tab_names)
+	for x in range(0,len(loaded_plugs)):
+		if loaded_plugs[x].plugin_data['plugin_tree'] == slctd and not loaded_plugs[x].plugin_data['plugin_name'] in tab_names :
+			loaded_plugs[x].gui(gui_main.gui_general)
+			#print(loaded_plugs[x].plugin_name,"Selected")
 
 def in_directory(file, directory):
 	directory = os.path.join(os.path.realpath(directory), '')

@@ -5,4 +5,6 @@ plugin_author=Suryasaradhi
 plugin_date=18/08/2020
 plugin_file=synflooder.py
 plugin_class=plugin_synflooder
+plugin_tree=Flooder/SynFlooder
 plugin_internal=True 
+plugin_linked_cnf=True

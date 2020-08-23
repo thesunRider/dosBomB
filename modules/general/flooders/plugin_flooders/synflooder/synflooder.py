@@ -15,16 +15,15 @@ except ImportError:
 
 from scapy.all import *
 from random import randint
+import configparser
 
 
 class plugin_dosbomb:
-	plugin_name="SynFlooder"
-	plugin_version="1.00"
-	plugin_author="Suryasaradhi"
-	plugin_date="18/08/2020"
-	plugin_file="synflooder.py"
-	plugin_class="plugin_synflooder"
-	plugin_internal=True 
+	config = configparser.RawConfigParser()
+	config.read('./modules/general/flooders/plugin_flooders/synflooder/synflooder.cnf')
+
+	plugin_data = dict(config.items('plugin'))
+	run = False
 
 	#IP enter gadget
 	class iPentry(tk.Widget):
@@ -39,7 +38,7 @@ class plugin_dosbomb:
 
 	def getIP(self,event):
 		myip = self.enterIp.get()
-		print(f"myip is {myip}")
+		#print(f"myip is {myip}")
 
 	def process(self):
 		print("Loaded Syn_Flooder")
@@ -48,7 +47,7 @@ class plugin_dosbomb:
 		guihandl['root'].tk.call('package','require','ipentry')
 		self.PNotebook1_t5 = tk.Frame(guihandl['notbkhandl'])
 		guihandl['notbkhandl'].add(self.PNotebook1_t5, padding=3)
-		guihandl['notbkhandl'].tab(guihandl['notbkhandl'].index("end")-1, text="SynFlooder",compound="none",underline="-1",)
+		guihandl['notbkhandl'].tab(guihandl['notbkhandl'].index("end")-1, text=self.plugin_data['plugin_name'],compound="none",underline="-1",)
 		self.PNotebook1_t5.configure(background="#d9d9d9")
 		self.PNotebook1_t5.configure(highlightbackground="#d9d9d9")
 		self.PNotebook1_t5.configure(highlightcolor="black")
@@ -155,7 +154,7 @@ class plugin_dosbomb:
 		self.Spinbox1_2.configure(selectforeground="white")
 		var_dummy3.set(1024)
 
-		self.Button1 = tk.Button(self.PNotebook1_t5)
+		self.Button1 = tk.Button(self.PNotebook1_t5,command=self.start_proc)
 		self.Button1.place(relx=0.054, rely=0.793, height=33, width=96)
 		self.Button1.configure(activebackground="#ececec")
 		self.Button1.configure(activeforeground="#000000")
@@ -165,9 +164,9 @@ class plugin_dosbomb:
 		self.Button1.configure(highlightbackground="#d9d9d9")
 		self.Button1.configure(highlightcolor="black")
 		self.Button1.configure(pady="0")
-		self.Button1.configure(text='''Launch''')
+		self.Button1.configure(text='''Launch''',state="normal")
 
-		self.Button1_3 = tk.Button(self.PNotebook1_t5)
+		self.Button1_3 = tk.Button(self.PNotebook1_t5,command=self.stop_proc)
 		self.Button1_3.place(relx=0.268, rely=0.789, height=33, width=96)
 		self.Button1_3.configure(activebackground="#ececec")
 		self.Button1_3.configure(activeforeground="#000000")
@@ -181,7 +180,16 @@ class plugin_dosbomb:
 
 		#guihandl['root'].bind('<Return>', self.getIP)
 
-		print("Synflooder gui shown")
+		#print("Synflooder gui shown")
+	def start_proc(self):
+		self.Button1_3.configure(state="normal")
+		self.Button1.configure(state="disabled")
+		self.run = True
+
+	def stop_proc(self):
+		self.Button1_3.configure(state="disabled")
+		self.Button1.configure(state="normal")
+		self.run = False
 
 	def randomIP():
 		ip = ".".join(map(str, (randint(0, 255)for _ in range(4))))
