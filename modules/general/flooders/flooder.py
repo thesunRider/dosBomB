@@ -19,9 +19,15 @@ class plugin_dosbomb:
 	flooder_loc = './modules/general/flooders/plugin_flooders/'
 
 	
+	def suspend(self):
+		for x in range(0,len(self.modulesin)):
+			self.modulesin[x].suspend()
 
-	def process(self):
-		print("loaded_flooder")
+
+	def start(self):
+		for x in range(0,len(self.modulesin)):
+			self.modulesin[x].start()
+
 
 	def gui(self,guihandl):
 		PNOTEBOOK = ""

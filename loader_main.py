@@ -8,11 +8,14 @@ class plugin_dosbomb:
 					"plugin_linked_cnf" : False,"plugin_tree" : ''}
 	run = False
 
-	def process(self):
-		print("Internal process call")
+	def suspend(self):
+		print("Suspend current process")
+
+	def start(self):
+		print("Process start")
 
 	def gui(self,guihandl):
-		print("Internal gui plugins call")
+		print("GUI plugins call")
 
 
 

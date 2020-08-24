@@ -25,6 +25,7 @@ except ImportError:
 
 import gui_support
 from PIL import ImageTk, Image
+exitFlag = False
 
 def vp_start_gui():
     '''Starting point when module is the main routine.'''
@@ -355,6 +356,15 @@ class Toplevel1:
         gui_general['notbkhandl'] =  self.PNotebook1
         gui_general['menubar'] = self.menubar
         gui_general['treeview'] = self.treeview
+        root.protocol("WM_DELETE_WINDOW", on_quit)
+
+
+def on_quit():
+    global exitFlag
+    exitFlag = True
+    root.destroy()
+
+
 
 # The following code is add to handle mouse events with the close icons
 # in PNotebooks widgets.
