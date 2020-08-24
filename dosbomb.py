@@ -42,10 +42,10 @@ async def gui_tasks_update():
 				sent_data = int(round(psutil.net_io_counters().bytes_sent /1024,1))
 				recv_data = int(round(psutil.net_io_counters().bytes_recv /1024,1))
 				if len(running_tasks) > 0 :
-					vark = 'Tasks Running: ' + str(len(running_tasks)) +'  ' + running_tasks[k_inc].plugin_data['plugin_name']
-					k_inc += 1
 					if k_inc > len(running_tasks)-1 :
 						k_inc = 0
+					vark = 'Tasks Running: ' + str(len(running_tasks)) +'  ' + running_tasks[k_inc].plugin_data['plugin_name']
+					k_inc += 1
 				else :
 					vark = 'Tasks Running: 0 None Running...'
 

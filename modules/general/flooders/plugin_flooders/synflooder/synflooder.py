@@ -201,13 +201,11 @@ class plugin_dosbomb:
 		self.Button1_3.configure(state="normal")
 		self.Button1.configure(state="disabled")
 		self.run = True
-		self.start()
 
 	def stop_proc(self):
 		self.Button1_3.configure(state="disabled")
 		self.Button1.configure(state="normal")
 		self.run = False
-		self.suspend()
 
 	def randomIP(self):
 		ip = ".".join(map(str, (randint(0, 255)for _ in range(4))))

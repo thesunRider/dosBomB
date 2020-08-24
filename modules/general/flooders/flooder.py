@@ -25,7 +25,8 @@ class plugin_dosbomb:
 
 
 	def start(self):
-		print("Flooder started")
+		for x in range(0,len(self.modulesin)):
+			self.modulesin[x].start()
 
 
 	def gui(self,guihandl):
