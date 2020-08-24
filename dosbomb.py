@@ -6,7 +6,7 @@ import requests,nmap,asyncio,time,psutil
 import gui_main,os
 from loader_main import *
 from scapy.all import *
-import subprocess
+import subprocess,tkinter
 #setting proxy stuff
 proxy = 'http://127.0.0.1:8080'
 
@@ -31,9 +31,13 @@ async def gui_tasks_update():
 	gui_main.gui_general['root'].update()
 	while 1:
 		try:
+			if gui_main.exitFlag:
+				os._exit(1)
+
 			gui_main.gui_general['root'].update_idletasks()
 			gui_main.gui_general['root'].update()
 			if int(time.time())%refresh_statusbar == 0 and not update_status:
+				print("updating")
 				update_status = True
 				sent_data = int(round(psutil.net_io_counters().bytes_sent /1024,1))
 				recv_data = int(round(psutil.net_io_counters().bytes_recv /1024,1))
@@ -59,7 +63,7 @@ async def gui_tasks_update():
 				update_status = False
 
 		except Exception as e:
-			print(e)
+			raise  
 			return
 	
 		#handle over the cotrol flow to other loops
@@ -93,10 +97,11 @@ async def pollrunning_processes():
 		#print(running_tasks)
 		for x in range(0,len(loaded_plugs)):
 			if loaded_plugs[x].run and not loaded_plugs[x] in running_tasks :
-				loaded_plugs[x].process()
+				loaded_plugs[x].start()
 				running_tasks.append(loaded_plugs[x])
 			elif not loaded_plugs[x].run and loaded_plugs[x] in running_tasks:
 				if len(running_tasks) > 0 :
+					loaded_plugs[x].suspend()
 					running_tasks.remove(loaded_plugs[x])
 					print(running_tasks)
 		await asyncio.sleep(0)

