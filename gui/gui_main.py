@@ -288,7 +288,7 @@ class Toplevel1:
         self.TLabel4.configure(text='''Description''')
 
         self.Text2 = tk.Text(self.PNotebook1)
-        self.Text2.place(relx=0.5, rely=0.22, relheight=0.722, relwidth=0.471)
+        self.Text2.place(relx=0.5, rely=0.22, relheight=0.522, relwidth=0.471)
         self.Text2.configure(background="white")
         self.Text2.configure(font="TkTextFont")
         self.Text2.configure(foreground="black")
@@ -299,6 +299,18 @@ class Toplevel1:
         self.Text2.configure(selectforeground="white")
         self.Text2.configure(wrap="word")
         self.Text2.configure(state="disabled")
+
+        self.Button3 = tk.Button(self.PNotebook1)
+        self.Button3.place(relx=0.5, rely=0.825, height=33, width=266)
+        self.Button3.configure(activebackground="#ececec")
+        self.Button3.configure(activeforeground="#000000")
+        self.Button3.configure(background="#d9d9d9")
+        self.Button3.configure(disabledforeground="#a3a3a3")
+        self.Button3.configure(foreground="#000000")
+        self.Button3.configure(highlightbackground="#d9d9d9")
+        self.Button3.configure(highlightcolor="black")
+        self.Button3.configure(pady="0")
+        self.Button3.configure(text='''Show plugin''')
 
 
         self.TFrame1 = ttk.Frame(top)
@@ -355,7 +367,7 @@ class Toplevel1:
         gui_general['statusbar'] = {'task_lbl':self.tsk_lbl,'ntwrk_lbl_up':self.ntup ,'ntwrk_lbl_dwn':self.ntdwn}
         gui_general['notbkhandl'] =  self.PNotebook1
         gui_general['menubar'] = self.menubar
-        gui_general['treeview'] = self.treeview
+        gui_general['cntrl_share'] = {'treeview':self.treeview,'loadplug': self.Button3}
         root.protocol("WM_DELETE_WINDOW", on_quit)
 
 
