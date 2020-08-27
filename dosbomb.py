@@ -13,6 +13,8 @@ proxy = 'http://127.0.0.1:8080'
 running_tasks = []
 loaded_plugs = []
 
+sel_cur = ''
+
 os.environ['http_proxy'] = proxy 
 os.environ['HTTP_PROXY'] = proxy
 os.environ['https_proxy'] = proxy
@@ -113,30 +115,36 @@ def refreshtreeview(plugs):
 		if not tre_id == '' :
 			tre_split = tre_id.split("/")
 			for y in range(0,len(tre_split)):
-				if gui_main.gui_general['treeview'].exists(tre_split[y] + str(y)):
+				if gui_main.gui_general['cntrl_share']['treeview'].exists(tre_split[y] + str(y)):
 					#print(tre_split,"skip iter")
 					continue
 
 				if len(tre_split) == 1 :
-					gui_main.gui_general['treeview'].insert('','end',tre_id,text=tre_id)  
+					gui_main.gui_general['cntrl_share']['treeview'].insert('','end',tre_id,text=tre_id)  
 					break
 				if y == 0:
-					gui_main.gui_general['treeview'].insert('','end',tre_split[y] + str(y),text=tre_split[y]) 			
+					gui_main.gui_general['cntrl_share']['treeview'].insert('','end',tre_split[y] + str(y),text=tre_split[y]) 			
 				elif y == len(tre_split)-1:
-					gui_main.gui_general['treeview'].insert(tre_split[y-1] + str(y-1),'end',tre_id,text=tre_split[y])
+					gui_main.gui_general['cntrl_share']['treeview'].insert(tre_split[y-1] + str(y-1),'end',tre_id,text=tre_split[y])
 				else :
-					gui_main.gui_general['treeview'].insert(tre_split[y-1] + str(y-1),'end',tre_split[y] + str(y),text=tre_split[y])
+					gui_main.gui_general['cntrl_share']['treeview'].insert(tre_split[y-1] + str(y-1),'end',tre_split[y] + str(y),text=tre_split[y])
 
-	gui_main.gui_general['treeview'].bind('<<TreeviewSelect>>', trviiew_slct)
+	gui_main.gui_general['cntrl_share']['treeview'].bind('<<TreeviewSelect>>', trviiew_slct)
+	gui_main.gui_general['cntrl_share']['loadplug'].configure(command=butnclckevnt)
 
 def trviiew_slct(event):
 	slctd = event.widget.selection()[0]
+	global sel_cur
+	sel_cur = ''
 	tab_names = [gui_main.gui_general['notbkhandl'].tab(i, option="text") for i in gui_main.gui_general['notbkhandl'].tabs()]
 	#print(tab_names)
 	for x in range(0,len(loaded_plugs)):
 		if loaded_plugs[x].plugin_data['plugin_tree'] == slctd and not loaded_plugs[x].plugin_data['plugin_name'] in tab_names :
-			loaded_plugs[x].gui(gui_main.gui_general)
-			#print(loaded_plugs[x].plugin_name,"Selected")
+			sel_cur = loaded_plugs[x]
+
+def butnclckevnt():
+	if not sel_cur == '':
+		sel_cur.gui(gui_main.gui_general)
 
 def in_directory(file, directory):
 	directory = os.path.join(os.path.realpath(directory), '')

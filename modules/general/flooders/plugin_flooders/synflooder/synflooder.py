@@ -51,7 +51,7 @@ class plugin_dosbomb:
 				if self.run_task[x].is_alive():
 					self.run_task[x].terminate()
 
-	def start(self):
+	def start(self,nmap_scan = {'use':False}):
 		print("Start Synflooder")
 		ip = self.enterIp.get()
 		self.run_task.append(multiprocessing.Process(target=self.SYN_Flood, args=('.'.join(map(str, list(ip))), int(self.Spinbox1.get()), int(self.Spinbox1_1.get()),int(self.Spinbox1_2.get()),)))
@@ -78,7 +78,7 @@ class plugin_dosbomb:
 		self.Label6.configure(text='''Console Output''')
 
 		self.Text1 = tk.Text(self.PNotebook1_t5)
-		self.Text1.place(relx=0.518, rely=0.119, relheight=0.811, relwidth=0.454)
+		self.Text1.place(relx=0.5, rely=0.106, relheight=0.81, relwidth=0.471)
 
 		self.Text1.configure(background="white")
 		self.Text1.configure(font="TkTextFont")
@@ -193,6 +193,9 @@ class plugin_dosbomb:
 		self.Button1_3.configure(highlightcolor="black")
 		self.Button1_3.configure(pady="0")
 		self.Button1_3.configure(text='''Stop''',state="disabled")
+
+
+
 
 		#guihandl['root'].bind('<Return>', self.getIP)
 
