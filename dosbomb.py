@@ -142,6 +142,19 @@ def trviiew_slct(event):
 		if loaded_plugs[x].plugin_data['plugin_tree'] == slctd and not loaded_plugs[x].plugin_data['plugin_name'] in tab_names :
 			sel_cur = loaded_plugs[x]
 
+def addNode( value, parentNode="", key=None):
+	if key is None:
+		id = ""
+	else:
+		id = gui_main.gui_general['cntrl_share']['scntre'].insert(parentNode, "end", text=key)
+
+	if isinstance(value, dict):
+		gui_main.gui_general['cntrl_share']['scntre'].item(id, open=True)
+		for (key, value) in value.items():
+			addNode(value, id, key)
+	else:
+		gui_main.gui_general['cntrl_share']['scntre'].item(id, values=(value,))
+
 def butnclckevnt():
 	if not sel_cur == '':
 		sel_cur.gui(gui_main.gui_general)
