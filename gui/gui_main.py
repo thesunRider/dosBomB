@@ -26,28 +26,34 @@ except ImportError:
 import gui_support
 from PIL import ImageTk, Image
 exitFlag = False
+w = None
+
+#IP enter gadget
+class iPentry(tk.Widget):
+    def __init__(self, master):
+        tk.Widget.__init__(self, master, '::ipentry::ipentry')
+
+    def get(self):
+        return self.tk.call(self._w, 'get')
+
+    def complete(self):
+        return self.tk.call(self._w, 'complete')
+
+def getIP(self,event):
+    myip = self.enterIp.get()
+
 
 def vp_start_gui():
     '''Starting point when module is the main routine.'''
     global val, w, root
     root = tk.Tk()
     gui_general['root'] = root
+    root.tk.call('package','require','ipentry')
 
     top = Toplevel1 (root)
     gui_support.init(root, top)
 
-    PNotebook1_t1 = tk.Frame(gui_general['notbkhandl'])
-    gui_general['notbkhandl'].add(PNotebook1_t1, padding=3)
-    gui_general['notbkhandl'].tab(1, text="Scan",compound="none",underline="-1",)
-    PNotebook1_t1.configure(background="#d9d9d9")
-    PNotebook1_t1.configure(highlightbackground="#d9d9d9")
-    PNotebook1_t1.configure(highlightcolor="black")
 
-
-
-
-
-w = None
 def create_Toplevel1(rt, *args, **kwargs):
     '''Starting point when module is imported by another module.
        Correct form of call: 'create_Toplevel1(root, *args, **kwargs)' .'''
@@ -258,6 +264,7 @@ class Toplevel1:
         self.PNotebook1.place(relx=0.033, rely=0.212, relheight=0.689
                 , relwidth=0.934)
         self.PNotebook1.configure(style=PNOTEBOOK)
+        
         self.PNotebook1_t2 = tk.Frame(self.PNotebook1)
         self.PNotebook1.add(self.PNotebook1_t2, padding=3)
         self.PNotebook1.tab(0, text="General",compound="none",underline="-1",)
@@ -266,18 +273,29 @@ class Toplevel1:
         self.PNotebook1_t2.configure(cursor="fleur")
         self.PNotebook1_t2.configure(highlightbackground="#d9d9d9")
         self.PNotebook1_t2.configure(highlightcolor="black")
+
+        self.PNotebook1_t1_2 = tk.Frame(self.PNotebook1)
+        self.PNotebook1.add(self.PNotebook1_t1_2, padding=3)
+        self.PNotebook1.tab(1, text="Scan",compound="none",underline="-1",)
+        self.PNotebook1_t2.configure(borderwidth="20")
+        self.PNotebook1_t2.configure(background="#d9d9d9")
+        self.PNotebook1_t2.configure(cursor="fleur")
+        self.PNotebook1_t2.configure(highlightbackground="#d9d9d9")
+        self.PNotebook1_t2.configure(highlightcolor="black")
+
+
         self.PNotebook1.bind('<Button-1>',_button_press)
         self.PNotebook1.bind('<ButtonRelease-1>',_button_release)
         self.PNotebook1.bind('<Motion>',_mouse_over)
 
 
-        self.treeview=ttk.Treeview(self.PNotebook1)
+        self.treeview=ttk.Treeview(self.PNotebook1_t2)
         self.treeview.heading("#0",text="Loaded Plugins",anchor=tk.W)
-        self.treeview.place(relx=0.036, rely=0.22)
+        self.treeview.place(relx=0.016, rely=0.02)
         #self.treeview.move('item2','item1','end')  
         #self.treeview.move('item3','item1','end')  
 
-        self.TLabel4 = ttk.Label(self.PNotebook1)
+        self.TLabel4 = ttk.Label(self.PNotebook1_t2)
         self.TLabel4.place(relx=0.482, rely=0.13, height=24, width=85)
         self.TLabel4.configure(background="#d9d9d9")
         self.TLabel4.configure(foreground="#000000")
@@ -287,7 +305,7 @@ class Toplevel1:
         self.TLabel4.configure(justify='left')
         self.TLabel4.configure(text='''Description''')
 
-        self.Text2 = tk.Text(self.PNotebook1)
+        self.Text2 = tk.Text(self.PNotebook1_t2)
         self.Text2.place(relx=0.5, rely=0.22, relheight=0.522, relwidth=0.471)
         self.Text2.configure(background="white")
         self.Text2.configure(font="TkTextFont")
@@ -300,7 +318,7 @@ class Toplevel1:
         self.Text2.configure(wrap="word")
         self.Text2.configure(state="disabled")
 
-        self.Button3 = tk.Button(self.PNotebook1)
+        self.Button3 = tk.Button(self.PNotebook1_t2)
         self.Button3.place(relx=0.5, rely=0.825, height=33, width=266)
         self.Button3.configure(activebackground="#ececec")
         self.Button3.configure(activeforeground="#000000")
@@ -364,10 +382,40 @@ class Toplevel1:
         self.TLabel3.configure(anchor='w')
         self.TLabel3.configure(justify='left')
 
+
+        self.Label13 = tk.Label(self.PNotebook1_t1_2)
+        self.Label13.place(relx=0.018, rely=0.076, height=26, width=52)
+        self.Label13.configure(background="#d9d9d9")
+        self.Label13.configure(disabledforeground="#a3a3a3")
+        self.Label13.configure(foreground="#000000")
+        self.Label13.configure(text='''Enter IP:''')
+
+        self.Button4 = tk.Button(self.PNotebook1_t1_2)
+        self.Button4.place(relx=0.071, rely=0.229, height=33, width=83)
+        self.Button4.configure(activebackground="#ececec")
+        self.Button4.configure(activeforeground="#000000")
+        self.Button4.configure(background="#d9d9d9")
+        self.Button4.configure(cursor="fleur")
+        self.Button4.configure(disabledforeground="#a3a3a3")
+        self.Button4.configure(foreground="#000000")
+        self.Button4.configure(highlightbackground="#d9d9d9")
+        self.Button4.configure(highlightcolor="black")
+        self.Button4.configure(pady="0")
+        self.Button4.configure(text='''Scan''')
+
+        self.enterIp = iPentry(self.PNotebook1_t1_2)
+        self.enterIp.place(relx=0.153, rely=0.076)
+
+        self.treesc = ttk.Treeview(self.PNotebook1_t1_2, columns=("value",))
+        self.vsb = ttk.Scrollbar(self.PNotebook1_t1_2, orient="vertical", command=self.treesc.yview)
+        self.treesc.configure(yscrollcommand=self.vsb.set)
+        self.treesc.place(relx=0.423, rely=0.078,width=300)
+
+
         gui_general['statusbar'] = {'task_lbl':self.tsk_lbl,'ntwrk_lbl_up':self.ntup ,'ntwrk_lbl_dwn':self.ntdwn}
         gui_general['notbkhandl'] =  self.PNotebook1
         gui_general['menubar'] = self.menubar
-        gui_general['cntrl_share'] = {'treeview':self.treeview,'loadplug': self.Button3}
+        gui_general['cntrl_share'] = {'treeview':self.treeview,'loadplug': self.Button3,'scntre':self.treesc}
         root.protocol("WM_DELETE_WINDOW", on_quit)
 
 

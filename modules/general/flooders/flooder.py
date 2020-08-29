@@ -39,7 +39,7 @@ class plugin_dosbomb:
 		self.PNotebook1_t3.configure(highlightbackground="#d9d9d9")
 		self.PNotebook1_t3.configure(highlightcolor="black")
 		self.PNotebook2_12 = ttk.Notebook(self.PNotebook1_t3)
-		self.PNotebook2_12.place(relx=0.018, rely=0.04, relheight=0.921, relwidth=0.964)
+		self.PNotebook2_12.place(relx=0.01, rely=0.01, relheight=0.921, relwidth=0.964)
 		self.PNotebook2_12.configure(style=PNOTEBOOK)
 
 		self.plugs_s = loader_main.loader_plugin()
