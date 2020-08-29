@@ -1,9 +1,22 @@
-import tkinter as tk
-import tkinter.ttk as ttk
-import nmap
+import Tkinter as tk
+import ttk
 
-nm = nmap.PortScanner()
-DATA = nm.scan()
+DATA = {
+    "filename":"file.txt",
+    "filesize":"500kb",
+    "maxcolwidth": {
+        "col1":"300",
+        "col2":"2",
+        "col3":"3"
+        },
+    "numberofcolumns":"3",
+    "datatypes": {
+        "col1":"string",
+        "col2":"int",
+        "col3":"int"
+        },
+    "rowcount":"400"
+    }
 
 class Example(tk.Frame):
     def __init__(self, parent):
@@ -18,7 +31,18 @@ class Example(tk.Frame):
 
         self.addNode(value=DATA, parentNode="")
 
+    def addNode(self, value, parentNode="", key=None):
+        if key is None:
+            id = ""
+        else:
+            id = self.tree.insert(parentNode, "end", text=key)
 
+        if isinstance(value, dict):
+            self.tree.item(id, open=True)
+            for (key, value) in value.items():
+                self.addNode(value, id, key)
+        else:
+            self.tree.item(id, values=(value,))
 
 if __name__ == "__main__":
     root = tk.Tk()

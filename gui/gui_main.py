@@ -26,22 +26,34 @@ except ImportError:
 import gui_support
 from PIL import ImageTk, Image
 exitFlag = False
+w = None
+
+#IP enter gadget
+class iPentry(tk.Widget):
+    def __init__(self, master):
+        tk.Widget.__init__(self, master, '::ipentry::ipentry')
+
+    def get(self):
+        return self.tk.call(self._w, 'get')
+
+    def complete(self):
+        return self.tk.call(self._w, 'complete')
+
+def getIP(self,event):
+    myip = self.enterIp.get()
+
 
 def vp_start_gui():
     '''Starting point when module is the main routine.'''
     global val, w, root
     root = tk.Tk()
     gui_general['root'] = root
+    root.tk.call('package','require','ipentry')
 
     top = Toplevel1 (root)
     gui_support.init(root, top)
 
 
-
-
-
-
-w = None
 def create_Toplevel1(rt, *args, **kwargs):
     '''Starting point when module is imported by another module.
        Correct form of call: 'create_Toplevel1(root, *args, **kwargs)' .'''
@@ -391,20 +403,19 @@ class Toplevel1:
         self.Button4.configure(pady="0")
         self.Button4.configure(text='''Scan''')
 
-        self.Label14 = tk.Label(self.PNotebook1_t1_2)
-        self.Label14.place(relx=0.393, rely=0.076, height=26, width=23)
-        self.Label14.configure(background="#d9d9d9")
-        self.Label14.configure(disabledforeground="#a3a3a3")
-        self.Label14.configure(foreground="#000000")
-        self.Label14.configure(text='''trv''')
+        self.enterIp = iPentry(self.PNotebook1_t1_2)
+        self.enterIp.place(relx=0.153, rely=0.076)
 
+        self.treesc = ttk.Treeview(self.PNotebook1_t1_2, columns=("value",))
+        self.vsb = ttk.Scrollbar(self.PNotebook1_t1_2, orient="vertical", command=self.treesc.yview)
+        self.treesc.configure(yscrollcommand=self.vsb.set)
+        self.treesc.place(relx=0.423, rely=0.078,width=300)
 
-        
 
         gui_general['statusbar'] = {'task_lbl':self.tsk_lbl,'ntwrk_lbl_up':self.ntup ,'ntwrk_lbl_dwn':self.ntdwn}
         gui_general['notbkhandl'] =  self.PNotebook1
         gui_general['menubar'] = self.menubar
-        gui_general['cntrl_share'] = {'treeview':self.treeview,'loadplug': self.Button3}
+        gui_general['cntrl_share'] = {'treeview':self.treeview,'loadplug': self.Button3,'scntre':self.treesc}
         root.protocol("WM_DELETE_WINDOW", on_quit)
 
 
