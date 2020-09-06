@@ -1,6 +1,7 @@
 [plugin]
 plugin_name=Flooder
 plugin_version=1.00
+plugin_description=Launches Flooder Attacks from here
 plugin_author=Suryasaradhi
 plugin_date=18/08/2020
 plugin_file=flooder.py
