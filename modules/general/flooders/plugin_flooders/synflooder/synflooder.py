@@ -51,7 +51,10 @@ class plugin_dosbomb:
 				if self.run_task[x].is_alive():
 					self.run_task[x].terminate()
 
-	def start(self,nmap_scan = {'forceuse':False,'data':''}):
+	def nmap_start():
+		pass
+
+	def start(self):
 		print("Start Synflooder")
 		ip = self.enterIp.get()
 		for x in range(0, int(self.Spinbox1_1.get())):

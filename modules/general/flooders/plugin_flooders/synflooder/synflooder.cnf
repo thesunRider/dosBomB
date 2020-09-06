@@ -8,3 +8,4 @@ plugin_class=plugin_synflooder
 plugin_tree=Flooder/SynFlooder
 plugin_internal=True 
 plugin_linked_cnf=True
+plugin_nmap=True
