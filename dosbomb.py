@@ -41,6 +41,8 @@ from PIL import ImageTk, Image
 exitFlag = False
 w = None
 top = ''
+ping_checkvar = None
+scn_defult = None
 
 os.environ['http_proxy'] = proxy 
 os.environ['HTTP_PROXY'] = proxy
@@ -63,8 +65,11 @@ class iPentry(tk.Widget):
 
 def vp_start_gui():
     '''Starting point when module is the main routine.'''
-    global val, w, root,top
+    global val, w, root,top,ping_checkvar,scn_defult
     root = tk.Tk()
+
+    ping_checkvar = tk.IntVar()
+    scn_defult = tk.IntVar()
     gui_general['root'] = root
     root.tk.call('package','require','ipentry')
 
@@ -159,6 +164,7 @@ class Toplevel1:
         self.Label3.configure(disabledforeground="#a3a3a3")
         self.Label3.configure(foreground="#000000")
         self.Label3.configure(text='''v1.01''')
+
 
         self.Label4 = tk.Label(self.Frame1)
         self.Label4.place(relx=0.603, rely=0.141, height=26, width=90)
@@ -400,7 +406,7 @@ class Toplevel1:
         self.Label13.configure(text='''Enter IP:''')
 
         self.Button4 = tk.Button(self.PNotebook1_t1_2,command=scn_btnclck)
-        self.Button4.place(relx=0.071, rely=0.229, height=33, width=83)
+        self.Button4.place(relx=0.054, rely=0.66, height=33, width=173)
         self.Button4.configure(activebackground="#ececec")
         self.Button4.configure(activeforeground="#000000")
         self.Button4.configure(background="#d9d9d9")
@@ -423,6 +429,82 @@ class Toplevel1:
         self.hsb.place(relx=0.428, rely=0.93, width=308)
         self.treesc.configure(yscrollcommand=self.vsb.set,xscrollcommand=self.hsb.set)
 
+        self.Spinbox2 = tk.Spinbox(self.PNotebook1_t1_2, from_=1.0, to=65535)
+        self.Spinbox2.place(relx=0.25, rely=0.369, relheight=0.098
+                , relwidth=0.118)
+        self.Spinbox2.configure(activebackground="#f9f9f9")
+        self.Spinbox2.configure(background="white")
+        self.Spinbox2.configure(buttonbackground="#d9d9d9")
+        self.Spinbox2.configure(cursor="fleur")
+        self.Spinbox2.configure(disabledforeground="#a3a3a3")
+        self.Spinbox2.configure(font="TkDefaultFont")
+        self.Spinbox2.configure(foreground="black")
+        self.Spinbox2.configure(highlightbackground="black")
+        self.Spinbox2.configure(highlightcolor="black")
+        self.Spinbox2.configure(insertbackground="black")
+        self.Spinbox2.configure(selectbackground="blue")
+        self.Spinbox2.insert(0,100)
+        self.Spinbox2.configure(selectforeground="white",state="disabled")
+
+        self.Spinbox3 = tk.Spinbox(self.PNotebook1_t1_2, from_=1.0, to=65535)
+        self.Spinbox3.place(relx=0.036, rely=0.369, relheight=0.098
+                , relwidth=0.118)
+        self.Spinbox3.configure(activebackground="#f9f9f9")
+        self.Spinbox3.configure(background="white")
+        self.Spinbox3.configure(buttonbackground="#d9d9d9")
+        self.Spinbox3.configure(disabledforeground="#a3a3a3")
+        self.Spinbox3.configure(font="TkDefaultFont")
+        self.Spinbox3.configure(foreground="black")
+        self.Spinbox3.configure(highlightbackground="black")
+        self.Spinbox3.configure(highlightcolor="black")
+        self.Spinbox3.configure(insertbackground="black")
+        self.Spinbox3.configure(selectbackground="blue")
+        self.Spinbox3.configure(selectforeground="white",state="disabled")
+
+
+        self.Label15 = tk.Label(self.PNotebook1_t1_2)
+        self.Label15.place(relx=-0.018, rely=0.205, height=26, width=82)
+        self.Label15.configure(background="#d9d9d9")
+        self.Label15.configure(disabledforeground="#a3a3a3")
+        self.Label15.configure(foreground="#000000")
+        self.Label15.configure(text='''Range:''')
+
+        self.Label16 = tk.Label(self.PNotebook1_t1_2)
+        self.Label16.place(relx=0.161, rely=0.328, height=26, width=42)
+        self.Label16.configure(background="#d9d9d9")
+        self.Label16.configure(disabledforeground="#a3a3a3")
+        self.Label16.configure(foreground="#000000")
+        self.Label16.configure(text='''To''')
+
+        self.Checkbutton3 = tk.Checkbutton(self.PNotebook1_t1_2)
+        self.Checkbutton3.place(relx=0.111, rely=0.197, relheight=0.127
+                , relwidth=0.264)
+        self.Checkbutton3.configure(activebackground="#ececec")
+        self.Checkbutton3.configure(activeforeground="#000000")
+        self.Checkbutton3.configure(background="#d9d9d9")
+        self.Checkbutton3.configure(disabledforeground="#a3a3a3")
+        self.Checkbutton3.configure(foreground="#000000")
+        self.Checkbutton3.configure(highlightbackground="#d9d9d9")
+        self.Checkbutton3.configure(highlightcolor="black")
+        self.Checkbutton3.configure(justify='left',variable=scn_defult)
+        self.Checkbutton3.configure(text='''Scan Default Ports''',command=self.disable_nmapports)
+        scn_defult.set(True)
+
+        self.Checkbutton4 = tk.Checkbutton(self.PNotebook1_t1_2)
+        self.Checkbutton4.place(relx=0.036, rely=0.533, relwidth=0.288
+                , relheight=0.0, height=26)
+        self.Checkbutton4.configure(activebackground="#ececec")
+        self.Checkbutton4.configure(activeforeground="#000000")
+        self.Checkbutton4.configure(background="#d9d9d9")
+        self.Checkbutton4.configure(disabledforeground="#a3a3a3")
+        self.Checkbutton4.configure(foreground="#000000")
+        self.Checkbutton4.configure(highlightbackground="#d9d9d9")
+        self.Checkbutton4.configure(highlightcolor="black")
+        self.Checkbutton4.configure(justify='left')
+        self.Checkbutton4.configure(text='''Disable Ping Check''')
+        self.Checkbutton4.configure(variable=ping_checkvar)
+        ping_checkvar.set(True)
+
         self.Label14 = tk.Label(self.PNotebook1_t1_2)
         self.Label14.place(relx=0.013, rely=0.86, height=26, width=70)
         self.Label14.configure(background="#d9d9d9")
@@ -436,16 +518,38 @@ class Toplevel1:
         gui_general['statusbar'] = {'task_lbl':self.tsk_lbl,'ntwrk_lbl_up':self.ntup ,'ntwrk_lbl_dwn':self.ntdwn}
         gui_general['notbkhandl'] =  self.PNotebook1
         gui_general['menubar'] = self.menubar
-        gui_general['cntrl_share'] = {'treeview':self.treeview,'loadplug': self.Button3,'scntre':self.treesc,'scnprg':self.pr1,'scnip':self.enterIp2}
+        gui_general['cntrl_share'] = {'treeview':self.treeview,'loadplug': self.Button3,'scntre':self.treesc,'scnprg':self.pr1,'scnip':self.enterIp2,'port_end':self.Spinbox2,'port_start':self.Spinbox3}
 
         root.protocol("WM_DELETE_WINDOW", on_quit)
+
+    def disable_nmapports(self):
+    	statevar="normal"
+    	if scn_defult.get():
+    		statevar = "disabled"
+    	self.Spinbox3.configure(state=statevar)
+    	self.Spinbox2.configure(state=statevar)
+    	print('disabled checkboxes')
 
 def scn_btnclck():
 	loop = asyncio.get_event_loop()
 	loop.create_task(nmapscandisplay())
 
 async def nmapscandisplay():
-	nmap_proc = NmapProcess(targets='.'.join(map(str, list(gui_general['cntrl_share']['scnip'].get()))),options="-A")
+	opt_scn = "-A"
+	if scn_defult.get():
+		print("Scanning Default")
+	else:
+		print("Scanning new ports")
+		opt_scn += " -p " +  str(gui_general['cntrl_share']['port_start'].get()) +"-" + str(gui_general['cntrl_share']['port_end'].get())
+
+	if ping_checkvar.get() :
+		opt_scn += " -Pn"
+		print("Ping is Disabled")
+	else:
+		print("Ping is enabled")
+
+	print("Options for scan:",opt_scn )
+	nmap_proc = NmapProcess(targets='.'.join(map(str, list(gui_general['cntrl_share']['scnip'].get()))),options=opt_scn)
 	nmap_proc.run_background()
 	print('startednmapscan')
 	while nmap_proc.is_running():
