@@ -41,6 +41,7 @@ from PIL import ImageTk, Image
 exitFlag = False
 w = None
 top = ''
+
 ping_checkvar = None
 scn_defult = None
 
@@ -62,10 +63,9 @@ class iPentry(tk.Widget):
     def complete(self):
         return self.tk.call(self._w, 'complete')
 
-
 def vp_start_gui():
     '''Starting point when module is the main routine.'''
-    global val, w, root,top,ping_checkvar,scn_defult
+    global val, w, root,top,ping_checkvar,scn_defult,scn_decp,edit_description
     root = tk.Tk()
 
     ping_checkvar = tk.IntVar()
@@ -75,7 +75,6 @@ def vp_start_gui():
 
     top = Toplevel1 (root)
     gui_support.init(root, top)
-
 
 def create_Toplevel1(rt, *args, **kwargs):
     '''Starting point when module is imported by another module.
@@ -230,7 +229,7 @@ class Toplevel1:
         self.sub_menu3.add_command(
             label="Help")
         self.sub_menu3.add_command(
-            label="Buy me a coffee ;-)")
+            label="Buy us a coffee ;-)")
         
 
         global _images
@@ -331,7 +330,7 @@ class Toplevel1:
         self.Text2.configure(selectbackground="blue")
         self.Text2.configure(selectforeground="white")
         self.Text2.configure(wrap="word")
-        self.Text2.configure(state="disabled")
+        #self.Text2.configure(state="disabled")
 
         self.Button3 = tk.Button(self.PNotebook1_t2)
         self.Button3.place(relx=0.5, rely=0.825, height=33, width=266)
@@ -421,7 +420,7 @@ class Toplevel1:
         self.enterIp2 = iPentry(self.PNotebook1_t1_2)
         self.enterIp2.place(relx=0.123, rely=0.076)
 
-        self.treesc = ttk.Treeview(self.PNotebook1_t1_2, columns=("value",))
+        self.treesc = ttk.Treeview(self.PNotebook1_t1_2, columns=("value","value",))
         self.treesc.place(relx=0.423, rely=0.028,width=310,height=250)
         self.vsb = ttk.Scrollbar(self.PNotebook1_t1_2, orient="vertical", command=self.treesc.yview)
         self.hsb = ttk.Scrollbar(self.PNotebook1_t1_2, orient="horizontal", command=self.treesc.xview)
@@ -518,7 +517,8 @@ class Toplevel1:
         gui_general['statusbar'] = {'task_lbl':self.tsk_lbl,'ntwrk_lbl_up':self.ntup ,'ntwrk_lbl_dwn':self.ntdwn}
         gui_general['notbkhandl'] =  self.PNotebook1
         gui_general['menubar'] = self.menubar
-        gui_general['cntrl_share'] = {'treeview':self.treeview,'loadplug': self.Button3,'scntre':self.treesc,'scnprg':self.pr1,'scnip':self.enterIp2,'port_end':self.Spinbox2,'port_start':self.Spinbox3}
+        gui_general['cntrl_share'] = {'treeview':self.treeview,'loadplug': self.Button3,'scntre':self.treesc,'scnprg':self.pr1
+        ,'scnip':self.enterIp2,'port_end':self.Spinbox2,'port_start':self.Spinbox3,'scn_decp':self.Text2}
 
         root.protocol("WM_DELETE_WINDOW", on_quit)
 
@@ -529,6 +529,153 @@ class Toplevel1:
     	self.Spinbox3.configure(state=statevar)
     	self.Spinbox2.configure(state=statevar)
     	print('disabled checkboxes')
+
+class nmap_scansuggestions:
+
+    def __init__(self, top,nmap_report):
+        _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
+        _fgcolor = '#000000'  # X11 color: 'black'
+        _compcolor = '#d9d9d9' # X11 color: 'gray85'
+        _ana1color = '#d9d9d9' # X11 color: 'gray85'
+        _ana2color = '#ececec' # Closest X11 color: 'gray92'
+        self.checkme = tk.IntVar()
+
+        top.geometry("775x419+800+286")
+        top.minsize(148, 1)
+        top.maxsize(1924, 1055)
+        top.resizable(1, 1)
+        top.title("DOS Suggester")
+        top.configure(background="#d9d9d9")
+
+        self.Label1 = tk.Label(top)
+        self.Label1.place(relx=-0.039, rely=0.024, height=32, width=211)
+        self.Label1.configure(background="#d9d9d9")
+        self.Label1.configure(disabledforeground="#a3a3a3")
+        self.Label1.configure(foreground="#000000")
+        self.Label1.configure(text='''Suggested DOS:''')
+
+        self.Button1 = tk.Button(top)
+        self.Button1.place(relx=0.671, rely=0.74, height=33, width=206)
+        self.Button1.configure(activebackground="#ececec")
+        self.Button1.configure(activeforeground="#000000")
+        self.Button1.configure(background="#d9d9d9")
+        self.Button1.configure(disabledforeground="#a3a3a3")
+        self.Button1.configure(foreground="#000000")
+        self.Button1.configure(highlightbackground="#d9d9d9")
+        self.Button1.configure(highlightcolor="black")
+        self.Button1.configure(pady="0")
+        self.Button1.configure(text='''Launch selected DOS''')
+
+        self.Button2 = tk.Button(top)
+        self.Button2.place(relx=0.671, rely=0.859, height=33, width=206)
+        self.Button2.configure(activebackground="#ececec")
+        self.Button2.configure(activeforeground="#000000")
+        self.Button2.configure(background="#d9d9d9")
+        self.Button2.configure(cursor="fleur")
+        self.Button2.configure(disabledforeground="#a3a3a3")
+        self.Button2.configure(foreground="#000000")
+        self.Button2.configure(highlightbackground="#d9d9d9")
+        self.Button2.configure(highlightcolor="black")
+        self.Button2.configure(pady="0")
+        self.Button2.configure(text='''Launch ALL compatible DOS''')
+
+        self.Label2 = tk.Label(top)
+        self.Label2.place(relx=0.519, rely=0.029, height=32, width=86)
+        self.Label2.configure(background="#d9d9d9")
+        self.Label2.configure(disabledforeground="#a3a3a3")
+        self.Label2.configure(foreground="#000000")
+        self.Label2.configure(text='''Details:''')
+
+        self.Checkbutton1 = tk.Checkbutton(top)
+        self.Checkbutton1.place(relx=0.039, rely=0.859, relheight=0.074
+                , relwidth=0.268)
+        self.Checkbutton1.configure(activebackground="#ececec")
+        self.Checkbutton1.configure(activeforeground="#000000")
+        self.Checkbutton1.configure(background="#d9d9d9")
+        self.Checkbutton1.configure(disabledforeground="#a3a3a3")
+        self.Checkbutton1.configure(foreground="#000000")
+        self.Checkbutton1.configure(highlightbackground="#d9d9d9")
+        self.Checkbutton1.configure(highlightcolor="black")
+        self.Checkbutton1.configure(justify='left')
+        self.Checkbutton1.configure(text='''Use Approximate Matcher''')
+        self.Checkbutton1.configure(variable=self.checkme)
+
+        self.Button3 = tk.Button(top)
+        self.Button3.place(relx=0.348, rely=0.859, height=33, width=176)
+        self.Button3.configure(activebackground="#ececec")
+        self.Button3.configure(activeforeground="#000000")
+        self.Button3.configure(background="#d9d9d9")
+        self.Button3.configure(disabledforeground="#a3a3a3")
+        self.Button3.configure(foreground="#000000")
+        self.Button3.configure(highlightbackground="#d9d9d9")
+        self.Button3.configure(highlightcolor="black")
+        self.Button3.configure(pady="0")
+        self.Button3.configure(text='''Match''')
+
+        self.treesc = ttk.Treeview(top, columns=("value","value",))
+        self.treesc.place(relx=0.045, rely=0.148, height=259, width=319)
+
+        self.treesc2 = ttk.Treeview(top, columns=("value",))
+        self.treesc2.place(relx=0.542, rely=0.143, height=181, width=270)
+
+        self.treesc.bind('<<TreeviewSelect>>', self.launch_dos_descrip)
+        self.Button1.configure(command=self.launch_dos)
+        self.Button2.configure(command=self.launch_dos_all)
+        self.load_suggestions()
+
+    def launch_dos_descrip(self,event): 
+         slctd = event.widget.selection()[0]
+         global sel_cur
+         sel_cur = ''
+         for x in range(0,len(loaded_plugs)):
+             if loaded_plugs[x].plugin_data['plugin_tree'] == slctd:
+                 sel_cur = loaded_plugs[x]
+                 self.Text1.delete("1.0", "end")  # if you want to remove the old data
+                 self.Text1.insert(tk.END,sel_cur.plugin_data['plugin_description'])
+
+
+    def launch_dos(self):
+    	pass
+
+    def launch_dos_all(self):
+    	pass
+
+    def verify_compatible(self,check_var):
+    	if check_var.plugin_data['plugin_nmap_profile'] == "ALL":
+    		return True
+    	else :
+    		pass
+    	
+
+    def load_suggestions(self):
+        plugs = [] 
+        for x in range(0,len(loaded_plugs)):
+            if 'plugin_nmap' in loaded_plugs[x].plugin_data:
+                print('cpmpatible with nmap',loaded_plugs[x].plugin_data['plugin_name'])
+                if loaded_plugs[x].plugin_data['plugin_nmap'] == 'True' and self.verify_compatible(loaded_plugs[x]):
+            	     plugs.append(loaded_plugs[x])
+
+        print(plugs)
+        for x in range(0,len(plugs)):
+            tre_id = plugs[x].plugin_data['plugin_tree']
+            if not tre_id == '' :
+                tre_split = tre_id.split("/")
+                for y in range(0,len(tre_split)):
+                    if self.treesc.exists(tre_split[y] + str(y)):
+						#print(tre_split,"skip iter")
+                        continue
+
+                    if len(tre_split) == 1 :
+                        self.treesc.insert('','end',tre_id,text=tre_id)  
+                        break
+                    if y == 0:
+                        self.treesc.insert('','end',tre_split[y] + str(y),text=tre_split[y]) 			
+                    elif y == len(tre_split)-1:
+                        self.treesc.insert(tre_split[y-1] + str(y-1),'end',tre_id,text=tre_split[y])
+                    else :
+                        self.treesc.insert(tre_split[y-1] + str(y-1),'end',tre_split[y] + str(y),text=tre_split[y])
+
+		
 
 def scn_btnclck():
 	loop = asyncio.get_event_loop()
@@ -563,7 +710,10 @@ async def nmapscandisplay():
 
 	nmap_report = NmapParser.parse(nmap_proc.stdout)
 	print('finishednmapscan')
-	addNode(parse_scan(nmap_report))
+	prsd = parse_scan(nmap_report)
+	addNode(prsd)
+
+	nmap_scansuggestions(tk.Toplevel(gui_general['root']),prsd)
 
 def parse_scan(nmap_report):
 	aps = {}
@@ -754,6 +904,13 @@ def trviiew_slct(event):
 	for x in range(0,len(loaded_plugs)):
 		if loaded_plugs[x].plugin_data['plugin_tree'] == slctd and not loaded_plugs[x].plugin_data['plugin_name'] in tab_names :
 			sel_cur = loaded_plugs[x]
+	
+	for x in range(0,len(loaded_plugs)):
+		if loaded_plugs[x].plugin_data['plugin_tree'] == slctd:
+			sel_cur = loaded_plugs[x]
+			gui_general['cntrl_share']['scn_decp'].delete("1.0", "end")  # if you want to remove the old data
+			gui_general['cntrl_share']['scn_decp'].insert(tk.END,sel_cur.plugin_data['plugin_description'])
+			print("Plugin Description:",sel_cur.plugin_data['plugin_description'])
 
 def addNode( value, parentNode="", key=None):
 	if key is None:
@@ -776,6 +933,8 @@ def in_directory(file, directory):
 	directory = os.path.join(os.path.realpath(directory), '')
 	file = os.path.realpath(file)
 	return os.path.commonprefix([file, directory]) == directory
+
+
 
 if __name__ == '__main__':
 	vp_start_gui()

@@ -24,6 +24,7 @@ class plugin_dosbomb:
 	config.read('./modules/general/flooders/plugin_flooders/synflooder/synflooder.cnf')
 
 	plugin_data = dict(config.items('plugin'))
+	plugin_data['plugin_nmap_profile'] = "ALL"
 	run = False
 	run_task = []
 
