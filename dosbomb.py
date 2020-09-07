@@ -9,6 +9,9 @@ from scapy.all import *
 import subprocess,tkinter,dosfunc
 from libnmap.process import NmapProcess
 from libnmap.parser import *
+from PIL import Image, ImageTk
+import  Levenshtein 
+
 #setting proxy stuff
 proxy = 'http://127.0.0.1:8080'
 
@@ -44,14 +47,16 @@ top = ''
 
 ping_checkvar = None
 scn_defult = None
+nmap_prsd = None
+nmap_report = None
 
 os.environ['http_proxy'] = proxy 
 os.environ['HTTP_PROXY'] = proxy
 os.environ['https_proxy'] = proxy
 os.environ['HTTPS_PROXY'] = proxy
 
-loop = asyncio.get_event_loop()
 
+loop = asyncio.get_event_loop()
 
 class iPentry(tk.Widget):
     def __init__(self, master):
@@ -405,7 +410,7 @@ class Toplevel1:
         self.Label13.configure(text='''Enter IP:''')
 
         self.Button4 = tk.Button(self.PNotebook1_t1_2,command=scn_btnclck)
-        self.Button4.place(relx=0.054, rely=0.66, height=33, width=173)
+        self.Button4.place(relx=0.024, rely=0.66, height=33, width=85)
         self.Button4.configure(activebackground="#ececec")
         self.Button4.configure(activeforeground="#000000")
         self.Button4.configure(background="#d9d9d9")
@@ -417,10 +422,23 @@ class Toplevel1:
         self.Button4.configure(pady="0")
         self.Button4.configure(text='''Scan''')
 
+        self.Button5 = tk.Button(self.PNotebook1_t1_2,command=analyze_start)
+        self.Button5.place(relx=0.204, rely=0.66, height=33, width=100)
+        self.Button5.configure(activebackground="#ececec")
+        self.Button5.configure(activeforeground="#000000")
+        self.Button5.configure(background="#d9d9d9")
+        self.Button5.configure(cursor="fleur")
+        self.Button5.configure(disabledforeground="#a3a3a3")
+        self.Button5.configure(foreground="#000000")
+        self.Button5.configure(highlightbackground="#d9d9d9")
+        self.Button5.configure(highlightcolor="black")
+        self.Button5.configure(pady="0")
+        self.Button5.configure(text='''Suggest DOS''',state="disabled")
+
         self.enterIp2 = iPentry(self.PNotebook1_t1_2)
         self.enterIp2.place(relx=0.123, rely=0.076)
 
-        self.treesc = ttk.Treeview(self.PNotebook1_t1_2, columns=("value","value",))
+        self.treesc = ttk.Treeview(self.PNotebook1_t1_2, columns=("value"))
         self.treesc.place(relx=0.423, rely=0.028,width=310,height=250)
         self.vsb = ttk.Scrollbar(self.PNotebook1_t1_2, orient="vertical", command=self.treesc.yview)
         self.hsb = ttk.Scrollbar(self.PNotebook1_t1_2, orient="horizontal", command=self.treesc.xview)
@@ -518,7 +536,7 @@ class Toplevel1:
         gui_general['notbkhandl'] =  self.PNotebook1
         gui_general['menubar'] = self.menubar
         gui_general['cntrl_share'] = {'treeview':self.treeview,'loadplug': self.Button3,'scntre':self.treesc,'scnprg':self.pr1
-        ,'scnip':self.enterIp2,'port_end':self.Spinbox2,'port_start':self.Spinbox3,'scn_decp':self.Text2}
+        ,'scnip':self.enterIp2,'port_end':self.Spinbox2,'port_start':self.Spinbox3,'scn_decp':self.Text2,'scn_sugst':self.Button5,'scn_start':self.Button4}
 
         root.protocol("WM_DELETE_WINDOW", on_quit)
 
@@ -532,7 +550,7 @@ class Toplevel1:
 
 class nmap_scansuggestions:
 
-    def __init__(self, top,nmap_report):
+    def __init__(self, top):
         _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
         _fgcolor = '#000000'  # X11 color: 'black'
         _compcolor = '#d9d9d9' # X11 color: 'gray85'
@@ -610,78 +628,150 @@ class nmap_scansuggestions:
         self.Button3.configure(highlightbackground="#d9d9d9")
         self.Button3.configure(highlightcolor="black")
         self.Button3.configure(pady="0")
-        self.Button3.configure(text='''Match''')
+        self.Button3.configure(text='''Match''',command=self.load_suggestions)
 
-        self.treesc = ttk.Treeview(top, columns=("value","value",))
+        self.IM_CHECKED = ImageTk.PhotoImage(Image.open("./assets/checked.png"))
+        self.IM_UNCHECKED = ImageTk.PhotoImage(Image.open("./assets/unchecked.png"))
+        self.treesc = ttk.Treeview(top, columns=("value","value"))
         self.treesc.place(relx=0.045, rely=0.148, height=259, width=319)
+        self.treesc.heading("#0",text="Run",anchor=tk.W)
+        self.treesc.column("#0", width=50)
+        self.treesc.heading("#1",text="Name",anchor=tk.W)
+        self.treesc.column("#1", width=150)
+        self.treesc.tag_configure('checked',image=self.IM_CHECKED)
+        self.treesc.tag_configure('unchecked',image=self.IM_UNCHECKED)
 
-        self.treesc2 = ttk.Treeview(top, columns=("value",))
+        self.treesc2 = ttk.Treeview(top,columns=("value",))
+        self.treesc2.column("#0", width=100)
         self.treesc2.place(relx=0.542, rely=0.143, height=181, width=270)
 
         self.treesc.bind('<<TreeviewSelect>>', self.launch_dos_descrip)
-        self.Button1.configure(command=self.launch_dos)
-        self.Button2.configure(command=self.launch_dos_all)
-        self.load_suggestions()
+        self.treesc.bind('<Button 1>', self.togglecheck,add="+")
 
-    def launch_dos_descrip(self,event): 
-         slctd = event.widget.selection()[0]
+        self.Button1.configure(command=self.launch_dos)
+        self.Button2.configure(command=self.launch_dos_condition)
+
+    def launch_dos_descrip(self,event):
+         slctd = self.treesc.item(event.widget.selection())['values'][0]
+         print("Reached click select")
+         for i in self.treesc2.get_children():
+             self.treesc2.delete(i)
          global sel_cur
          sel_cur = ''
+         node_add = {}
+         node_add['profile'] = {}
          for x in range(0,len(loaded_plugs)):
-             if loaded_plugs[x].plugin_data['plugin_tree'] == slctd:
+             if loaded_plugs[x].plugin_data['plugin_name'] == slctd:
                  sel_cur = loaded_plugs[x]
-                 self.Text1.delete("1.0", "end")  # if you want to remove the old data
-                 self.Text1.insert(tk.END,sel_cur.plugin_data['plugin_description'])
+                 descp = sel_cur.plugin_data['plugin_description']
+
+                 node_add['name'] = sel_cur.plugin_data['plugin_name']
+                 for f in range(0,len(sel_cur.plugin_data['plugin_nmap_profile'])):
+                    node_add['profile'][str(f)] = sel_cur.plugin_data['plugin_nmap_profile'][f]
+                    self.addNode(node_add)
+                 print(node_add)
+                 node_add = ''
+
+    def addNode(self, value, parentNode="", key=None):
+        if key is None:
+            id = ""
+        else:
+            id = self.treesc2.insert(parentNode, "end", text=key)
+
+        if isinstance(value, dict):
+            self.treesc2.item(id, open=True)
+            for (key, value) in value.items():
+                self.addNode(value, id, key)
+        else:
+            self.treesc2.item(id, values=(value,))
+
+
 
 
     def launch_dos(self):
     	pass
 
-    def launch_dos_all(self):
+    def launch_dos_condition(self):
     	pass
 
     def verify_compatible(self,check_var):
-    	if check_var.plugin_data['plugin_nmap_profile'] == "ALL":
-    		return True
-    	else :
-    		pass
+        print("to check:",check_var)
+        if check_var.plugin_data['plugin_nmap'] == 'True':
+            profls = check_var.plugin_data['plugin_nmap_profile']
+            if check_var.plugin_data['plugin_nmap_profile'][0] == "ALL":
+                 return [True,100]
+            else :
+            	return_node = {}
+                 for x in range(0,len(profls)):
+                    if self.checkme:
+                        print('checked lavashentein')
+                        #Here the cpe string and banner are checked and average score is calculated
+                        for host in nmap_report.hosts:
+                            for serv in host.services:
+                                if len(serv.banner):
+                                	return_node[serv.service] = ''
+                                    return_node[serv.service]['Sanner match'] = Levenshtein.ratio(check_var.plugin_data['plugin_nmap_profile'][x]['banner'], serv.banner)
+                                    return_node[serv.service]['Service match'] = Levenshtein.ratio(check_var.plugin_data['plugin_nmap_profile'][x]['service'], serv.service)
+                                j = 0
+                                return_node[serv.service]['Cpe match'] = ''
+                                for cpes in serv.cpelist:
+                                	j += 1
+                                    return_node[serv.service]['cpe match']['Match ' +str(j)] = Levenshtein.ratio(check_var.plugin_data['plugin_nmap_profile'][x]['cpe'], cpes.cpestring)
+                        return [True,return_node]
+                    else:
+                        if profls[x] == check_var:
+                            return [True,100]
+
+
+
+        else:
+        	return [False,None]
     	
 
     def load_suggestions(self):
-        plugs = [] 
+        plugs = []
+        for i in self.treesc.get_children():
+             self.treesc.delete(i)
         for x in range(0,len(loaded_plugs)):
             if 'plugin_nmap' in loaded_plugs[x].plugin_data:
                 print('cpmpatible with nmap',loaded_plugs[x].plugin_data['plugin_name'])
-                if loaded_plugs[x].plugin_data['plugin_nmap'] == 'True' and self.verify_compatible(loaded_plugs[x]):
+                if self.verify_compatible(loaded_plugs[x])[0]:
             	     plugs.append(loaded_plugs[x])
 
         print(plugs)
         for x in range(0,len(plugs)):
-            tre_id = plugs[x].plugin_data['plugin_tree']
-            if not tre_id == '' :
-                tre_split = tre_id.split("/")
-                for y in range(0,len(tre_split)):
-                    if self.treesc.exists(tre_split[y] + str(y)):
-						#print(tre_split,"skip iter")
-                        continue
+            self.treesc.insert('',"end",text="",values=(plugs[x].plugin_data['plugin_name'],"suku"),tags="checked")
 
-                    if len(tre_split) == 1 :
-                        self.treesc.insert('','end',tre_id,text=tre_id)  
-                        break
-                    if y == 0:
-                        self.treesc.insert('','end',tre_split[y] + str(y),text=tre_split[y]) 			
-                    elif y == len(tre_split)-1:
-                        self.treesc.insert(tre_split[y-1] + str(y-1),'end',tre_id,text=tre_split[y])
-                    else :
-                        self.treesc.insert(tre_split[y-1] + str(y-1),'end',tre_split[y] + str(y),text=tre_split[y])
+    def togglecheck(self,event):
+        print(event)
+        try:
+             rowid = self.treesc.identify_row(event.y)
+             print(rowid)
+             tag =   self.treesc.item(rowid,"tags")[0]
+             tags = list(self.treesc.item(rowid,"tags"))
+             tags.remove(tag)
+             self.treesc.item(rowid,tags=tags)
+             if tag == 'checked':
+                 self.treesc.item(rowid,tags='unchecked')
+                 print("unchecked")
+             else :
+                 self.treesc.item(rowid,tags='checked')
+                 print("checked")
 
-		
+        except Exception as e:
+              print("DOnt click anywhere outside the listview bro")
 
 def scn_btnclck():
+	gui_general['cntrl_share']['scn_start'].configure(state='disabled')
 	loop = asyncio.get_event_loop()
 	loop.create_task(nmapscandisplay())
 
+def analyze_start():
+	if not nmap_prsd == '':
+		nmap_scansuggestions(tk.Toplevel(gui_general['root']))
+
 async def nmapscandisplay():
+	global nmap_prsd,nmap_report
 	opt_scn = "-A"
 	if scn_defult.get():
 		print("Scanning Default")
@@ -712,8 +802,10 @@ async def nmapscandisplay():
 	print('finishednmapscan')
 	prsd = parse_scan(nmap_report)
 	addNode(prsd)
-
-	nmap_scansuggestions(tk.Toplevel(gui_general['root']),prsd)
+	print("nmap parsed: ",prsd)
+	nmap_prsd = prsd
+	gui_general['cntrl_share']['scn_start'].configure(state='normal')
+	gui_general['cntrl_share']['scn_sugst'].configure(state="normal")
 
 def parse_scan(nmap_report):
 	aps = {}
@@ -726,12 +818,28 @@ def parse_scan(nmap_report):
 		aps['host'] = tmp_host
 		aps['hostaddress'] = host.address
 		aps['hoststatus'] = host.status
-		aps['osanalysis'] = host.os
+		aps['osanalysis'] = {}
+		aps['ports'] = {}
+		if host.os_fingerprinted:
+			print("OS Fingerprint:")
+			msg = ''
+			for osm in host.os.osmatches:
+				aps['osanalysis'][osm.name] = {}
+				aps['osanalysis'][osm.name]['accuracy'] = osm.accuracy
+				for osc in osm.osclasses:
+					aps['osanalysis'][osm.name]['description'] =  osc.description
+					for cpe in osc.cpelist:
+						aps['osanalysis'][osm.name]['CPE'] = cpe.cpestring
+			else:
+				print("No fingerprint available")
+
 		for serv in host.services:
 			ban = ''
 			if len(serv.banner):
 				ban = serv.banner
-			aps[str(serv.port)] = {'protocol':serv.protocol,'state':serv.state,'service':serv.service,'banner':ban}
+			aps['ports'][str(serv.port)] = {'protocol':serv.protocol,'state':serv.state,'service':serv.service,'banner':ban}
+			for cpes in serv.cpelist:
+				aps['ports'][str(serv.port)]['CPE'] = cpes.cpestring
 
 		return aps
 
